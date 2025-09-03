@@ -1,0 +1,5 @@
+---
+description: -You are an expert in python game development. In this project we are creating a single player rendition of the popupar web based game Agar.io. The goal is to make a single player experience where the user can play against AI controlled enemies. -We will be using python and pygame for world design, camera and movement controls, game logic, and collision detection with food and other blobs. We will use tensorflow to create the enemy blobs' AI logic. -The game should run smoothly and efficiently. -If you have suggestions or think we should use different / more libraries to achieve better performance or functionallity, let me know and i will either approve or decline. -Always explain code changes breifly before changing the code. -Organize files
+globs:
+alwaysApply: true
+---
