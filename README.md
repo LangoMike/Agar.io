@@ -1,104 +1,206 @@
 # Agar.io - Single Player Edition
 
-A single-player rendition of the popular web game Agar.io, built with Python and Pygame.
+A Python-based single-player rendition of the popular web game Agar.io, featuring AI-controlled opponents and advanced game mechanics.
 
-## Current Features ✅
+## 🎮 Features
 
-- **Basic Game Mechanics**: Player blob movement, food consumption, size growth
-- **Camera System**: Smooth camera following with world boundaries
-- **Dynamic Food System**: Multiple food sizes (0.5 to 50) with realistic rarity distribution
-- **Proper Scoring**: Player size IS the score (no separate score metric)
-- **Collision Detection**: Proper collision between player and food
-- **Petri Dish Background**: Grid pattern background similar to the original game
-- **Improved UI**: Clean interface showing time and score (size)
-- **Performance Optimized**: Efficient food rendering and camera calculations
-- **Balanced Gameplay**: Food density allows players to gain 40-70 size in ~10 seconds
+### Core Gameplay
+- **Dynamic Player Movement**: Smooth WASD and mouse-based movement with size-based speed scaling
+- **Food System**: Varied food sizes (19-55 mass) with probability-based distribution
+- **Intelligent Food Consumption**: Only eat food if player is bigger than the food
+- **Precise Collision Detection**: Food must be touched at center to be consumed
+- **Dynamic Camera System**: Smooth camera following with intelligent zoom based on player size
+- **World Boundaries**: Proper world constraints with smooth edge handling
 
-## Controls
+### Split Functionality
+- **Multi-Level Splitting**: Split into 2, 4, 8, or 16 blobs (up to 4 splits)
+- **Collision Avoidance**: Split blobs automatically avoid overlapping using repulsive forces
+- **Intelligent Positioning**: Blobs positioned strategically around the main blob
+- **Individual Growth**: Each split blob can consume food independently
+- **Automatic Rejoining**: Blobs rejoin after 30 seconds into a single blob
+- **Mass Conservation**: Total mass preserved during splits and rejoins
 
-- **Mouse Movement**: Move your blob by pointing the mouse in the desired direction
-- **F11**: Toggle fullscreen mode
-- **Close Window**: Click the X button to exit
+### Visual & UI
+- **Petri Dish Background**: Authentic grid pattern resembling the original game
+- **Dynamic Zoom**: Camera zooms out as player grows, maintaining optimal view
+- **Minimap**: Bottom-left minimap showing player position and world overview
+- **Pulse Animation**: Subtle visual effects on player blobs
+- **Modern UI**: Clean, informative display with player stats and game info
+- **Smooth Rendering**: Optimized graphics with minimal visual artifacts
 
-## Installation & Setup
+### Technical Features
+- **Modular Architecture**: Clean separation of concerns with dedicated packages
+- **Efficient Collision Detection**: Optimized algorithms for smooth performance
+- **Memory Management**: Proper lifecycle management for game entities
+- **Error Handling**: Comprehensive error handling with graceful fallbacks
+- **Performance Optimization**: Efficient rendering and update loops
 
-1. **Install Python 3.8+** if you haven't already
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Run the game**:
-   ```bash
-   python app.py
-   ```
+## 🚀 Getting Started
 
-## Game Mechanics
+### Prerequisites
+- Python 3.8+
+- Pygame 2.6.0+
 
-- **Objective**: Grow as large as possible by consuming food pellets
-- **Movement**: Your blob automatically moves toward the mouse cursor at improved speed
-- **Growth**: Each food pellet adds its size value to your score (size = score)
-- **Speed**: Larger blobs move slower but with better scaling (square root instead of linear)
-- **World**: Large explorable world with grid pattern background
+### Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/LangoMike/Agar.io
+cd Agar.io
+```
 
-## Food System
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-The game features a dynamic food system with different sizes and rarity:
+3. Run the game:
+```bash
+python main.py
+```
 
-| Food Size | Score Value | Rarity | Visual Size |
-|-----------|-------------|---------|-------------|
-| 19.0      | 19.0        | 35%     | Small       |
-| 25.0      | 25.0        | 25%     | Medium      |
-| 30.0      | 30.0        | 20%     | Large       |
-| 35.0      | 35.0        | 12%     | Huge        |
-| 40.0      | 40.0        | 6%      | Massive     |
-| 50.0      | 50.0        | 1.5%    | Legendary   |
-| 55.0      | 55.0        | 0.5%    | Ultra-Legendary |
+### Controls
+- **WASD**: Move player
+- **Mouse**: Set movement target
+- **Space**: Split player (when size allows)
+- **P**: Pause/Unpause
+- **ESC**: Quit game
 
-- **Balanced Distribution**: Smaller food is more common, larger food is rarer
-- **Visual Scaling**: Food size matches its score value
-- **Continuous Spawning**: New food spawns when old food is consumed
-
-## Technical Details
-
-- **Engine**: Pygame 2.6.1+
-- **World Size**: 23040x12960 pixels (20% larger than before)
-- **Screen Resolution**: 1920x1080 (resizable)
-- **FPS**: 60 FPS target
-- **Food Density**: 1 food per 400,000 pixels for balanced gameplay
-- **Movement**: Square root scaling for better feel at all sizes
-- **Architecture**: Modular design with separate Food class
-
-## Food Mechanics
-
-The game features intelligent food consumption rules:
-
-- **Size Requirement**: You can only eat food that is smaller than your current size
-- **Center Touch**: Food is only consumed when your blob touches the center of the food
-- **Pass Through**: If you're too small, you can pass through food without consuming it
-- **Strategic Growth**: You must grow strategically to access larger food pieces
-- **Balanced Density**: Food is distributed evenly across the larger world
-
-## Next Steps 🚀
-
-- [ ] AI-controlled enemy blobs using TensorFlow
-- [ ] Difficulty settings (Easy/Medium/Hard)
-- [ ] Split mechanics for faster movement
-- [ ] Eject mass functionality
-- [ ] Enemy blob consumption mechanics
-- [ ] Game over conditions
-- [ ] Sound effects and music
-- [ ] Particle effects for food consumption
-
-## File Structure
+## 🏗️ Project Structure
 
 ```
 Agar.io/
-├── app.py          # Main game logic and loop
-├── food.py         # Food class implementation
-├── requirements.txt # Python dependencies
-└── README.md       # This file
+├── main.py                 # Main entry point
+├── game/                   # Core game systems
+│   ├── game_engine.py     # Main game loop and coordination
+│   ├── camera.py          # Camera and viewport management
+│   ├── world.py           # World rendering and boundaries
+│   └── ui_manager.py      # User interface and minimap
+├── entities/               # Game objects
+│   ├── player.py          # Main player and split management
+│   ├── split_blob.py      # Individual split blob logic
+│   ├── food.py            # Food objects and spawning
+│   └── enemy.py           # Enemy blob definitions
+├── ai/                     # AI systems (future)
+│   ├── enemy_ai.py        # Enemy behavior logic
+│   ├── neural_network.py  # TensorFlow AI models
+│   └── difficulty.py      # Difficulty level management
+├── mechanics/              # Game mechanics
+│   ├── collision.py       # Collision detection system
+│   ├── split_manager.py   # Split/rejoin logic
+│   └── powerups.py        # Power-up system (future)
+├── utils/                  # Utility functions
+│   ├── constants.py       # Game configuration
+│   ├── math_utils.py      # Mathematical utilities
+│   └── helpers.py         # Helper functions
+├── assets/                 # Game resources
+│   ├── sounds/            # Audio files
+│   ├── fonts/             # Font files
+│   └── particles/         # Particle effects
+└── config/                 # Configuration files
+    ├── settings.py        # Game settings
+    └── difficulty_config.py # Difficulty configurations
 ```
 
-## Contributing
+## 🔧 Configuration
 
-Feel free to contribute improvements or report bugs! This is a learning project to understand game development and AI implementation.
+### Game Settings
+- **World Size**: 19200x10800 pixels (20% larger than screen)
+- **Food Density**: 1 food per 50,000 pixels
+- **Player Speed**: Base 400, scaled by size^0.2
+- **Split Limits**: Maximum 4 splits (16 total blobs)
+- **Rejoin Time**: 30 seconds
+
+### Food Distribution
+- **Size Range**: 19-55 mass
+- **Probability**: Smaller food more common, larger food rarer
+- **Spawning**: New food spawns for each consumed piece
+
+## 🎯 Next Steps
+
+### High Priority
+1. **Fix Split Mechanics**
+   - Food consumption and growth logic for split blobs
+   - Camera control during splits
+   - Zoom logic optimization for split states
+
+2. **Fix Background Grid Scaling**
+   - Eliminate grid glitches during splits
+   - Improve grid rendering performance
+   - Smooth grid transitions during zoom
+
+### Medium Priority
+3. **AI-Controlled Enemy Blobs using TensorFlow**
+   - Implement neural network-based enemy AI
+   - Dynamic enemy behavior patterns
+   - Learning-based difficulty progression
+
+4. **Difficulty Settings (Easy/Medium/Hard)**
+   - Enemy count and aggression scaling
+   - Food spawn rate adjustments
+   - AI behavior complexity levels
+
+5. **Eject Mass Functionality**
+   - Allow players to eject mass for strategic purposes
+   - Implement proper mass conservation
+   - Add visual feedback for ejected mass
+
+6. **Enemy Blob Consumption Mechanics**
+   - Player can eat smaller enemies
+   - Enemies can eat player
+   - Proper collision and consumption logic
+
+### Lower Priority
+7. **Game Over Conditions**
+   - Player size below minimum threshold
+   - Time-based challenges
+   - Achievement system
+
+8. **Sound Effects and Music**
+   - Background music
+   - Sound effects for actions
+   - Audio volume controls
+
+9. **Particle Effects for Food Consumption**
+   - Visual feedback when eating food
+   - Growth animation effects
+   - Performance-optimized particle system
+
+## 🐛 Known Issues
+
+- Split functionality partially working - subsequent splits after initial split need refinement
+- Minor grid rendering artifacts during complex splits
+- Camera zoom may occasionally be too aggressive
+- Split blob positioning could be more strategic
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by the original Agar.io game
+- Built with Pygame for Python game development
+- Future AI implementation planned with TensorFlow
+
+## 📊 Development Status
+
+- **Core Gameplay**: ✅ Complete
+- **Split System**: 🔄 Partially Complete (80%)
+- **AI Enemies**: ⏳ Planned
+- **Sound System**: ⏳ Planned
+- **Particle Effects**: ⏳ Planned
+
+---
+
+**Current Version**: 1.0.0  
+**Last Updated**: December 2024  
+**Python Version**: 3.8+  
+**Pygame Version**: 2.6.0+
