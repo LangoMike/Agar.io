@@ -40,7 +40,7 @@ PLAYER_BASE_SPEED = 400
 PLAYER_SPEED_POWER = 0.1
 
 # Camera Settings
-CAMERA_MIN_ZOOM = 0.15
+CAMERA_MIN_ZOOM = 0.10
 
 # Food Settings
 FOOD_SIZES = {
@@ -61,7 +61,7 @@ GROWTH_FACTOR = 0.3  # How quickly growth diminishes (0.1 = slow, 0.5 = fast)
 MIN_GROWTH_PERCENT = 0.1  # Minimum growth as percentage of base value (10%)
 
 # Enemy Settings
-ENEMY_START_COUNT = 8  # Increased for testing - easier to find enemies
+ENEMY_START_COUNT = 20  # Increased for testing - easier to find enemies
 ENEMY_MIN_SIZE = 20  # Same as player start size
 ENEMY_MAX_SIZE = 1400
 ENEMY_SPAWN_RATE = 0.1  # New enemy per 10 seconds

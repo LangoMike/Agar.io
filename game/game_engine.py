@@ -17,6 +17,7 @@ from utils.constants import (
     FOOD_DENSITY,
     FOOD_MULTIPLIER,
     ENEMY_START_COUNT,
+    PLAYER_SPLIT_REJOIN_TIME,
 )
 from entities.player import Player
 from entities.food import Food
@@ -44,7 +45,7 @@ class GameEngine:
         # Game state
         self.game_state = GAME_STATE_PLAYING
         self.running = True
-        
+
         # UI state
         self.show_controls = False
 
@@ -61,6 +62,7 @@ class GameEngine:
         self.game_start_time = time.time()
         self.game_time = 0
         self.delta_time = 0
+        self.death_timer = 0  # Timer for death delay
 
         # Food management
         self.max_food = int(self.world.get_area() * FOOD_DENSITY * FOOD_MULTIPLIER)
@@ -72,7 +74,7 @@ class GameEngine:
 
         # Enemy management
         self.enemies: List[EnemyBlob] = []
-        self.max_enemies = 12  # Increased for testing - easier to find enemies
+        self.max_enemies = 20  # Increased for testing - easier to find enemies
         self.enemy_spawn_timer = 0
         self.enemy_spawn_rate = 5.0
         self._generate_initial_enemies()
@@ -92,7 +94,7 @@ class GameEngine:
     def _get_safe_spawn_position(self) -> Vector2:
         """Get a safe spawn position away from player and other entities"""
         max_attempts = 50
-        min_distance = 100  # Minimum distance from player and other entities
+        min_distance = 50  # Reduced minimum distance to allow more enemies to spawn
 
         for _ in range(max_attempts):
             # Get random position
@@ -138,6 +140,9 @@ class GameEngine:
                 elif event.key == pygame.K_c:
                     # Toggle controls display
                     self.show_controls = not self.show_controls
+                elif event.key == pygame.K_F11:
+                    # Toggle fullscreen
+                    self._toggle_fullscreen()
 
             elif event.type == pygame.MOUSEMOTION:
                 self.mouse_pos = Vector2(event.pos)
@@ -167,6 +172,17 @@ class GameEngine:
             self.game_state = GAME_STATE_PAUSED
         elif self.game_state == GAME_STATE_PAUSED:
             self.game_state = GAME_STATE_PLAYING
+
+    def _toggle_fullscreen(self):
+        """Toggle between fullscreen and windowed mode"""
+        if pygame.display.get_surface().get_flags() & pygame.FULLSCREEN:
+            # Currently fullscreen, switch to windowed
+            pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+            print("🖥️ Switched to windowed mode")
+        else:
+            # Currently windowed, switch to fullscreen
+            pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+            print("🖥️ Switched to fullscreen mode")
 
     def _handle_split(self):
         """Handle player split request"""
@@ -219,6 +235,50 @@ class GameEngine:
         # Check victory conditions
         self._check_victory()
 
+        # Check if player has no active blobs left (after split blob deaths)
+        if self.player.is_split and not self.player.has_active_blobs():
+            # All split blobs are dead, end game
+            self._handle_player_death()
+            return  # Exit early to prevent further processing
+
+        # Update death timer if active
+        if self.death_timer > 0:
+            self.death_timer -= self.delta_time
+            if self.death_timer <= 0:
+                # Death delay complete, actually end the game
+                self.running = False
+
+    def _handle_split_blob_death(self, enemy, blob_index):
+        """Handle death of a single split blob"""
+        blob = self.player.split_blobs[blob_index]
+        if not blob.is_active:
+            return
+
+        # This blob was eaten - deactivate it
+        blob.deactivate()
+
+        # Make the enemy grow by eating the blob
+        growth_value = blob.size * 0.8  # Enemy gets 80% of blob mass
+        enemy.size += growth_value
+        enemy.total_mass_gained += growth_value
+        enemy._update_collision_properties()
+
+        # Check if this was the main blob
+        if blob_index == self.player.main_blob_index:
+            # Main blob died, find a new main blob
+            self.player._update_main_blob_index()
+
+        # Don't end game yet - other blobs might survive
+
+    def _handle_player_death(self):
+        """Handle complete player death (game over)"""
+        # Mark player as inactive
+        self.player.is_active = False
+
+        # Set death timer for 1 second delay
+        self.death_timer = 1.0
+        self.game_state = GAME_STATE_GAME_OVER
+
     def _handle_collisions(self):
         """Handle all collision detection and responses"""
         # Check player-food collisions
@@ -262,11 +322,21 @@ class GameEngine:
                         continue
 
             # Check if enemy can eat player (independent check)
-            if enemy.can_eat_player(player_size):
-                if enemy.check_collision_with_player(player_position, player_size):
-                    # Enemy ate the player - game over!
-                    self.game_state = GAME_STATE_GAME_OVER
-                    return
+            if self.player.is_split:
+                # Player is split - check each blob individually
+                for i, blob in enumerate(self.player.split_blobs):
+                    if blob.is_active and enemy.can_eat_player(blob.size):
+                        if enemy.check_collision_with_player(blob.position, blob.size):
+                            # This specific blob was eaten
+                            self._handle_split_blob_death(enemy, i)
+                            return
+            else:
+                # Single blob - check normally
+                if enemy.can_eat_player(player_size):
+                    if enemy.check_collision_with_player(player_position, player_size):
+                        # Single blob - game over!
+                        self._handle_player_death()
+                        return
 
     # Check player-enemy collisions
     def _update_enemies(self):
@@ -303,6 +373,20 @@ class GameEngine:
                                 new_food = Food(self.world.surface)
                                 self.food_group.add(new_food)
 
+                # Check enemy-enemy collisions
+                for other_enemy in self.enemies[:]:  # Copy list to allow removal
+                    if other_enemy == enemy or not other_enemy.is_active:
+                        continue
+
+                    if enemy.can_eat_enemy(other_enemy):
+                        if enemy.check_collision_with_enemy(other_enemy):
+                            if enemy.eat_enemy(other_enemy):
+                                # Enemy ate another enemy!
+                                self.enemies.remove(other_enemy)
+                                # Track this for AI training rewards
+                                enemy.enemies_eaten += 1
+                                continue
+
         # Spawn new enemies if needed
         self._spawn_enemies()
 
@@ -337,10 +421,16 @@ class GameEngine:
             self.game_state = GAME_STATE_GAME_OVER
 
     def _check_victory(self):
-        """Check if the player has won (eliminated all enemies)"""
+        """Check if the player has won (eliminated all enemies or reached 20000 score)"""
         # Check if all enemies are eliminated
         active_enemies = [enemy for enemy in self.enemies if enemy.is_active]
         if len(active_enemies) == 0:
+            self.game_state = GAME_STATE_VICTORY
+            return
+
+        # Check if player reached 20000 score
+        player_size = self.player.get_total_size()
+        if player_size >= 20000:
             self.game_state = GAME_STATE_VICTORY
 
     def draw(self):
@@ -372,7 +462,6 @@ class GameEngine:
         # Draw UI
         player_size = self.player.get_total_size()
         zoom_factor = self.camera.zoom_factor
-        split_count = self.player.split_count
         kill_count = self.player.kill_count
 
         self.ui_manager.draw_ui(
@@ -380,9 +469,18 @@ class GameEngine:
             player_size,
             self.game_time,
             zoom_factor,
-            split_count,
             kill_count,
+            getattr(self.player, "is_rejoining", False),
         )
+
+        # Draw split timer if player is split
+        if self.player.is_split:
+            current_time = time.time()
+            time_until_rejoin = PLAYER_SPLIT_REJOIN_TIME - (
+                current_time - self.player.last_split_time
+            )
+            if time_until_rejoin > 0:
+                self.ui_manager.draw_split_timer(self.screen, time_until_rejoin)
 
         # Draw leaderboard
         self.ui_manager.draw_leaderboard(
@@ -407,9 +505,9 @@ class GameEngine:
 
         # Draw controls button (controls info shown only when toggled)
         self.ui_manager.draw_controls_button(self.screen)
-        
+
         # Draw controls info only when toggled
-        if hasattr(self, 'show_controls') and self.show_controls:
+        if hasattr(self, "show_controls") and self.show_controls:
             self.ui_manager.draw_controls_info(self.screen)
 
         # Draw game state specific screens

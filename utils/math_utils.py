@@ -104,7 +104,7 @@ def smooth_step(edge0: float, edge1: float, x: float) -> float:
 def calculate_zoom_factor(
     player_size: float,
     base_size: float = 20,
-    min_zoom: float = 0.15,
+    min_zoom: float = 0.10,
     power: float = 0.2,
 ) -> float:
     """Calculate camera zoom factor based on player size"""

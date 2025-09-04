@@ -44,7 +44,7 @@ class Camera:
         old_effective_height = self.effective_height
 
         # Zoom in/out based on wheel direction
-        zoom_change = 0.1 if wheel_y > 0 else -0.1
+        zoom_change = 0.025 if wheel_y > 0 else -0.025
         new_zoom = self.zoom_factor + zoom_change
 
         # Clamp zoom to reasonable bounds

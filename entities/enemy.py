@@ -65,6 +65,7 @@ class EnemyBlob:
         self.is_active = True
         self.total_mass_gained = 0
         self.survival_time = 0
+        self.enemies_eaten = 0  # Track enemies consumed for AI training rewards
 
         # AI memory (for learning)
         self.successful_moves = []
@@ -272,8 +273,8 @@ class EnemyBlob:
 
     def can_eat_player(self, player_size: float) -> bool:
         """Check if enemy can eat the player"""
-        # Enemy must be significantly larger to eat player (prevents immediate game over)
-        return self.size > player_size * 1.5
+        # Enemy must be at least 1% larger to eat player (same as enemy vs enemy)
+        return self.size >= player_size * 1.01
 
     def eat_food(self, food) -> bool:
         """Consume food and grow with diminishing returns"""
@@ -315,6 +316,57 @@ class EnemyBlob:
         distance = distance_between_points(self.position, player_position)
         # Collision occurs when distance <= sum of both radii
         return distance <= (self.size + player_size)
+
+    def can_eat_enemy(self, other_enemy) -> bool:
+        """Check if this enemy can eat another enemy"""
+        if not self.is_active or not other_enemy.is_active:
+            return False
+
+        # Size requirement: must be at least 1% larger
+        return self.size >= other_enemy.size * 1.01
+
+    def check_collision_with_enemy(self, other_enemy) -> bool:
+        """Check collision with another enemy (center touch required)"""
+        if not self.is_active or not other_enemy.is_active:
+            return False
+
+        distance = distance_between_points(self.position, other_enemy.position)
+        # Collision occurs when distance <= sum of both radii
+        return distance <= (self.size + other_enemy.size)
+
+    def eat_enemy(self, other_enemy) -> bool:
+        """Eat another enemy and gain mass"""
+        if not self.can_eat_enemy(other_enemy):
+            return False
+
+        # Calculate growth value using diminishing returns
+        base_growth = other_enemy.size * 0.8  # 80% of enemy mass
+        growth_value = calculate_growth_value(base_growth, self.size)
+
+        # Apply growth
+        old_size = self.size
+        self.size += growth_value
+        self.total_mass_gained += growth_value
+
+        # Update collision properties
+        self._update_collision_properties()
+
+        # Deactivate the eaten enemy
+        other_enemy.deactivate()
+
+        return True
+
+    def _update_collision_properties(self):
+        """Update collision-related properties after size changes"""
+        self.collision_radius = self.size
+        self.collision_rect = pygame.Rect(
+            self.position.x - self.size,
+            self.position.y - self.size,
+            self.size * 2,
+            self.size * 2,
+        )
+        # Recalculate speed based on new size
+        self.speed = self._calculate_speed()
 
     def draw(
         self,

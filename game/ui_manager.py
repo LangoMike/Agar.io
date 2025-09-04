@@ -44,8 +44,8 @@ class UIManager:
         player_size: float,
         game_time: float,
         zoom_factor: float,
-        split_count: int = 0,
         kill_count: int = 0,
+        is_rejoining: bool = False,
     ):
         """Draw the main UI elements with modern rounded design"""
         # Create smaller UI background with rounded corners
@@ -74,47 +74,43 @@ class UIManager:
 
         screen.blit(ui_surface, ui_rect)
 
-        # Draw UI text with smaller fonts and better spacing
+        # Draw UI text with smaller fonts and centered positioning
         y_offset = 25
-        x_offset = 25
+        ui_center_x = ui_rect.centerx
 
-        # Size/Score (smaller font)
+        # Size/Score (centered)
         size_text = self.font_medium.render(
             f"Size: {player_size:.1f}", True, (255, 255, 255)
         )
-        screen.blit(size_text, (x_offset, y_offset))
+        size_rect = size_text.get_rect(centerx=ui_center_x, y=y_offset)
+        screen.blit(size_text, size_rect)
         y_offset += 28
 
-        # Time
+        # Time (centered)
         time_text = self.font_small.render(
             f"Time: {game_time:.1f}s", True, (255, 255, 255)
         )
-        screen.blit(time_text, (x_offset, y_offset))
+        time_rect = time_text.get_rect(centerx=ui_center_x, y=y_offset)
+        screen.blit(time_text, time_rect)
         y_offset += 25
 
-        # Zoom factor
+        # Zoom factor (centered)
         zoom_text = self.font_small.render(
             f"Zoom: {zoom_factor:.2f}x", True, (255, 255, 255)
         )
-        screen.blit(zoom_text, (x_offset, y_offset))
+        zoom_rect = zoom_text.get_rect(centerx=ui_center_x, y=y_offset)
+        screen.blit(zoom_text, zoom_rect)
         y_offset += 25
 
-        # Split info
-        if split_count > 0:
-            split_text = self.font_small.render(
-                f"Splits: {split_count}", True, (255, 255, 255)
-            )
-            screen.blit(split_text, (x_offset, y_offset))
-            y_offset += 25
-
-        # Kill count
+        # Kill count (centered)
         kill_text = self.font_small.render(
             f"Kills: {kill_count}", True, (255, 255, 255)
         )
-        screen.blit(kill_text, (x_offset, y_offset))
+        kill_rect = kill_text.get_rect(centerx=ui_center_x, y=y_offset)
+        screen.blit(kill_text, kill_rect)
         y_offset += 25
 
-        # Growth rate info (show diminishing returns in action)
+        # Growth rate info (centered)
         if player_size > 20:
             from utils.math_utils import calculate_growth_value
 
@@ -124,7 +120,65 @@ class UIManager:
             growth_text = self.font_small.render(
                 f"Growth: {growth_percent:.0f}%", True, (200, 255, 200)
             )
-            screen.blit(growth_text, (x_offset, y_offset))
+            growth_rect = growth_text.get_rect(centerx=ui_center_x, y=y_offset)
+            screen.blit(growth_text, growth_rect)
+
+        # Rejoin indicator (if active)
+        if is_rejoining:
+            rejoin_text = self.font_small.render(
+                "🔄 REJOINING...", True, (255, 255, 0)
+            )  # Yellow text
+            rejoin_rect = rejoin_text.get_rect(centerx=ui_center_x, y=y_offset + 25)
+            screen.blit(rejoin_text, rejoin_rect)
+
+    def draw_split_timer(self, screen: pygame.Surface, time_until_rejoin: float):
+        """Draw minimalist split timer countdown below the main UI"""
+        if time_until_rejoin <= 0:
+            return  # Don't show timer when not split
+
+        # Position below the main UI (top left)
+        timer_x = 15
+        timer_y = 170  # Below the main UI which ends at y=155
+
+        # Create small, translucent timer background
+        timer_width = 120
+        timer_height = 35
+
+        # Create timer surface with rounded corners
+        timer_surface = pygame.Surface((timer_width, timer_height), pygame.SRCALPHA)
+
+        # Draw translucent background
+        self._draw_rounded_rect(
+            timer_surface, (0, 0, timer_width, timer_height), (40, 40, 40, 150), 8
+        )
+
+        # Draw subtle border
+        self._draw_rounded_rect(
+            timer_surface,
+            (0, 0, timer_width, timer_height),
+            (80, 80, 80, 100),
+            8,
+            1,
+            True,
+        )
+
+        # Format time display
+        if time_until_rejoin >= 60:
+            # Show minutes and seconds
+            minutes = int(time_until_rejoin // 60)
+            seconds = int(time_until_rejoin % 60)
+            time_text = f"{minutes}:{seconds:02d}"
+        else:
+            # Show seconds with decimal for precision
+            time_text = f"{time_until_rejoin:.1f}s"
+
+        # Render timer text
+        timer_text = self.font_small.render(time_text, True, (255, 255, 255))
+        text_rect = timer_text.get_rect(center=(timer_width // 2, timer_height // 2))
+        timer_surface.blit(timer_text, text_rect)
+
+        # Draw timer on screen
+        screen.blit(timer_surface, (timer_x, timer_y))
 
     def draw_minimap(
         self,
@@ -297,7 +351,7 @@ class UIManager:
 
         # Draw victory text with bright colors
         victory_text = self.font_large.render(
-            "🎉 VICTORY! 🎉", True, (255, 255, 0)
+            "VICTORY!", True, (255, 255, 0)
         )  # Bright yellow
         text_rect = victory_text.get_rect(
             center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100)
@@ -589,6 +643,7 @@ class UIManager:
             "-Mouse Wheel = Zoom",
             "-SPACE = Split",
             "-P = Pause",
+            "-F11 = Fullscreen",
             "-ESC = Quit",
         ]
 

@@ -1,31 +1,21 @@
-# Core game engine
-pygame>=2.6.0
+# Core Game Dependencies
+pygame>=2.6.1
 
-# AI and machine learning
-tensorflow>=2.13.0
+# AI/ML Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
 numpy>=1.24.0
-scipy>=1.11.0
 
-# Data structures and utilities
+# Data Science & Training
+matplotlib>=3.7.0
 pandas>=2.0.0
 scikit-learn>=1.3.0
 
-# Audio and media
-pygame-mixer>=2.6.0
+# Development & Utilities
+tqdm>=4.65.0
+tensorboard>=2.13.0
 
-# Configuration and data
-pyyaml>=6.0
-configparser>=5.3.0
-
-# Performance and optimization
-numba>=0.57.0
-cython>=3.0.0
-
-# Development and testing
-pytest>=7.4.0
-black>=23.0.0
-flake8>=6.0.0
-
-# Optional: Advanced features
-matplotlib>=3.7.0  # For AI visualization
-seaborn>=0.12.0    # For statistics
+# Optional: For advanced AI features (compatible versions)
+gym>=0.26.0
+stable-baselines3>=2.0.0

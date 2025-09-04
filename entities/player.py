@@ -40,6 +40,9 @@ class Player:
         self.split_count = 0
         self.last_split_time = 0
         self.is_split = False
+        self.main_blob_index = 0  # Track which blob is the "main" blob for camera
+        self.rejoin_start_time = 0  # When rejoin animation starts
+        self.is_rejoining = False  # Whether we're in rejoin animation phase
 
         # Kill count
         self.kill_count = 0
@@ -81,14 +84,30 @@ class Player:
         self.target_position = Vector2(target_position)
 
         if self.is_split:
-            # Update split blobs
-            self._update_split_blobs(dt, target_position)
+            # Check if it's time to start rejoin animation (3 seconds before rejoin)
+            current_time = time.time()
+            time_until_rejoin = PLAYER_SPLIT_REJOIN_TIME - (
+                current_time - self.last_split_time
+            )
 
-            # Check if it's time to rejoin
-            if time.time() - self.last_split_time >= PLAYER_SPLIT_REJOIN_TIME:
-                self.rejoin_blobs()
-                self.is_split = False
-                self.split_count = 0
+            if time_until_rejoin <= 3.0 and not self.is_rejoining:
+                # Start rejoin animation
+                self.is_rejoining = True
+                self.rejoin_start_time = current_time
+
+            if self.is_rejoining:
+                # Update split blobs with rejoin animation
+                self._update_split_blobs_rejoin(dt, target_position, time_until_rejoin)
+
+                # Check if it's time to actually rejoin (2 seconds left)
+                if time_until_rejoin <= 2.0:
+                    self.rejoin_blobs()
+                    self.is_split = False
+                    self.split_count = 0
+                    self.is_rejoining = False
+            else:
+                # Normal split blob updates
+                self._update_split_blobs(dt, target_position)
 
         else:
             # Update main player
@@ -122,7 +141,7 @@ class Player:
             )
 
     def _update_split_blobs(self, dt: float, target_position: Vector2):
-        """Update all split blobs"""
+        """Update all split blobs with normal movement"""
         for blob in self.split_blobs:
             if blob.is_active:
                 # Pass other blobs for collision avoidance
@@ -194,6 +213,9 @@ class Player:
 
                 self.split_blobs.append(blob)
 
+            # Set the first blob (index 0) as the main blob for camera tracking
+            self.main_blob_index = 0
+
             # Update state
             self.is_split = True
             self.split_count += 1
@@ -231,12 +253,22 @@ class Player:
             self.split_blobs.extend(new_blobs)
             self.split_count += 1
 
+            # Keep the same main blob index (the main blob doesn't change during subsequent splits)
+
         return True
 
     def rejoin_blobs(self):
         """Rejoin all split blobs back into the main player"""
         if not self.is_split:
             return
+
+        # Get the main blob's current position (this is where we'll rejoin)
+        main_blob = self.split_blobs[self.main_blob_index] if self.split_blobs else None
+        if main_blob and main_blob.is_active:
+            rejoin_position = main_blob.position
+        else:
+            # Fallback to current position if main blob is invalid
+            rejoin_position = self.position
 
         # Calculate total mass from all blobs
         total_mass = 0
@@ -245,16 +277,94 @@ class Player:
                 total_mass += blob.size
                 blob.deactivate()
 
-        # Update main player
+        # Update main player at the rejoin position (no teleportation!)
+        self.position = rejoin_position
         self.size = total_mass
         self.speed = self._calculate_speed()
 
         # Reset split state
         self.is_split = False
         self.split_blobs.clear()
+        self.is_rejoining = False
 
         # Update collision properties
         self._update_collision_properties()
+
+    def _update_split_blobs_rejoin(
+        self, dt: float, target_position: Vector2, time_until_rejoin: float
+    ):
+        """Update split blobs with smooth rejoin animation toward main blob"""
+        if not self.split_blobs or self.main_blob_index >= len(self.split_blobs):
+            return
+
+        # Get the main blob position
+        main_blob = self.split_blobs[self.main_blob_index]
+        if not main_blob.is_active:
+            return
+
+        main_position = main_blob.position
+
+        for i, blob in enumerate(self.split_blobs):
+            if not blob.is_active or i == self.main_blob_index:
+                continue
+
+            # FIRST: Allow normal movement toward target (user control)
+            direction_to_target = target_position - blob.position
+            if direction_to_target.length() > 0:
+                direction_to_target = normalize_vector(direction_to_target)
+                target_movement = direction_to_target * blob.speed * dt
+                blob.position += target_movement
+
+            # SECOND: Add rejoin movement toward main blob
+            direction_to_main = main_position - blob.position
+            distance_to_main = direction_to_main.length()
+
+            if distance_to_main > 0:
+                # Normalize direction
+                direction_to_main = normalize_vector(direction_to_main)
+
+                # Calculate rejoin speed based on time remaining (3 seconds instead of 7)
+                # Faster movement as we get closer to rejoin time
+                rejoin_speed_factor = (
+                    1.0 + (3.0 - time_until_rejoin) / 3.0
+                )  # 1.0x to 2.0x speed
+                rejoin_speed = blob.speed * rejoin_speed_factor
+
+                # Calculate movement toward main blob
+                rejoin_movement = direction_to_main * rejoin_speed * dt
+
+                # Add rejoin movement to current position
+                blob.position += rejoin_movement
+
+                # Update collision properties
+                blob._update_collision_properties()
+
+                # Clamp to world boundaries
+                blob.position.x = clamp_value(
+                    blob.position.x, blob.size, WORLD_WIDTH - blob.size
+                )
+                blob.position.y = clamp_value(
+                    blob.position.y, blob.size, WORLD_HEIGHT - blob.size
+                )
+
+    def has_active_blobs(self) -> bool:
+        """Check if player has any active split blobs"""
+        if not self.is_split:
+            return True  # Single blob is always active
+        return any(blob.is_active for blob in self.split_blobs)
+
+    def _update_main_blob_index(self):
+        """Update main blob index when current main blob dies"""
+        if not self.split_blobs:
+            return
+
+            # Find the first active blob to be the new main blob
+        for i, blob in enumerate(self.split_blobs):
+            if blob.is_active:
+                self.main_blob_index = i
+                return
+
+        # If no active blobs found, this shouldn't happen but handle it
 
     def can_eat_food(self, food) -> bool:
         """Check if player can eat the given food"""
@@ -286,10 +396,11 @@ class Player:
             return False
 
         if self.is_split:
-            # Find the first blob that can eat the food
+            # Find the specific blob that actually ate the food (collision detection)
             for blob in self.split_blobs:
-                if blob.can_eat_food(food):
-                    return blob.eat_food(food)
+                if blob.is_active and blob.check_collision_with_food(food):
+                    if blob.can_eat_food(food):
+                        return blob.eat_food(food)
             return False
         else:
             # Main player eats food with diminishing returns
@@ -306,10 +417,11 @@ class Player:
             return False
 
         if self.is_split:
-            # Find the first blob that can eat the enemy
+            # Find the specific blob that actually ate the enemy (collision detection)
             for blob in self.split_blobs:
-                if blob.can_eat_enemy(enemy):
-                    return blob.eat_enemy(enemy)
+                if blob.is_active and blob.check_collision_with_enemy(enemy):
+                    if blob.can_eat_enemy(enemy):
+                        return blob.eat_enemy(enemy)
             return False
         else:
             # Main player eats enemy with diminishing returns
@@ -365,9 +477,10 @@ class Player:
             return
 
         if self.is_split:
-            # Draw split blobs
+            # Draw split blobs (only active ones)
             for blob in self.split_blobs:
-                blob.draw(surface, camera_x, camera_y, zoom_factor)
+                if blob.is_active:
+                    blob.draw(surface, camera_x, camera_y, zoom_factor)
         else:
             # Draw main player
             screen_x = (self.position.x - camera_x) * zoom_factor
@@ -406,8 +519,22 @@ class Player:
 
     def get_center_position(self) -> Vector2:
         """Get center position for camera following - ALWAYS follows main blob"""
-        # Camera should always follow the main blob, not center of mass
-        return self.position
+        if self.is_split and self.split_blobs:
+            # Camera follows the main blob (the one we're controlling)
+            main_blob = self.split_blobs[self.main_blob_index]
+            if main_blob.is_active:
+                return main_blob.position
+            else:
+                # If main blob is inactive, find the next active one
+                for i, blob in enumerate(self.split_blobs):
+                    if blob.is_active:
+                        self.main_blob_index = i
+                        return blob.position
+                # Fallback to first blob if none are active
+                return self.split_blobs[0].position
+        else:
+            # Camera follows main player when not split
+            return self.position
 
     def __str__(self) -> str:
         """String representation for debugging"""
