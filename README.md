@@ -211,14 +211,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📊 Development Status
 
 - **Core Gameplay**: ✅ Complete
-- **Split System**: 🔄 Partially Complete (80%)
-- **AI Enemies**: ⏳ Planned
+- **Split System**: 🔄 Partially Complete (90%)
+- **AI Enemies**: 🔄 Partially Complete (40%)
 - **Sound System**: ⏳ Planned
 - **Particle Effects**: ⏳ Planned
 
 ---
 
-**Current Version**: 1.0.0  
-**Last Updated**: December 2024  
+**Current Version**: 1.0.3  
+**Last Updated**: September 2025  
 **Python Version**: 3.8+  
 **Pygame Version**: 2.6.0+
