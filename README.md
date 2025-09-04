@@ -2,11 +2,11 @@
 
 A Python-based single-player rendition of the popular web game Agar.io, featuring AI-controlled opponents, advanced split mechanics, and neural network training capabilities.
 
-## 🎮 Game Overview
+## Game Overview
 
 Agar.io is a competitive multiplayer game where players control circular blobs that can eat food to grow larger, split into multiple pieces for strategic movement, and consume smaller opponents. This single-player version features intelligent AI adversaries and advanced game mechanics.
 
-### 🎯 Gameplay Objectives
+### Gameplay Objectives
 
 **Primary Goal**: Grow as large as possible by consuming food and other blobs while avoiding being eaten by larger opponents.
 
@@ -21,10 +21,10 @@ Agar.io is a competitive multiplayer game where players control circular blobs t
 - **Strategy**: Use splitting to escape danger or hunt smaller prey
 - **Survival**: Navigate a world filled with 20 AI opponents
 
-## 🚀 Features
+## Features
 
 ### Core Gameplay
-- **Dynamic Player Movement**: Smooth WASD and mouse-based movement with size-based speed scaling
+- **Dynamic Player Movement**: Mouse-based movement with size-based speed scaling
 - **Food System**: Varied food sizes (19-55 mass) with probability-based distribution and diminishing returns growth
 - **Intelligent Food Consumption**: Only eat food if player is bigger than the food
 - **Precise Collision Detection**: Food must be touched at center to be consumed
@@ -82,7 +82,7 @@ Agar.io is a competitive multiplayer game where players control circular blobs t
 - **Batch Processing**: Optimized AI decision-making for multiple enemies
 - **Model Persistence**: Save/load trained AI models with metadata
 
-## 🎮 Detailed Split Mechanics
+## Detailed Split Mechanics
 
 ### How Splitting Works
 1. **Split Trigger**: Press SPACE when your blob is large enough (minimum 40 mass for first split)
@@ -112,13 +112,11 @@ Agar.io is a competitive multiplayer game where players control circular blobs t
 - **Time Limit**: Automatic rejoin after 30 seconds
 - **Vulnerability**: Smaller blobs are easier targets for enemies
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.8+
 - Pygame 2.6.0+
-- PyTorch (for AI training)
-- DirectML (for AMD GPU acceleration on Windows)
 
 ### Installation
 1. Clone the repository:
@@ -146,17 +144,6 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### AI Training (Optional)
-To train AI models:
-```bash
-python ai_training/trainer.py
-```
-
-To manage trained models:
-```bash
-python ai_training/manage_models.py
-```
-
 ### Controls
 - **WASD**: Move player
 - **Mouse**: Set movement target
@@ -167,34 +154,8 @@ python ai_training/manage_models.py
 - **F11**: Toggle fullscreen mode
 - **ESC**: Quit game
 
-## 🏗️ Project Structure
 
-```
-Agar.io/
-├── main.py                     # Main entry point with AI model selection
-├── game/                       # Core game systems
-│   ├── game_engine.py         # Main game loop and coordination
-│   ├── camera.py              # Camera and viewport management
-│   ├── world.py               # World rendering and boundaries
-│   └── ui_manager.py          # User interface, minimap, and split timer
-├── entities/                   # Game objects
-│   ├── player.py              # Main player and split management
-│   ├── split_blob.py          # Individual split blob logic
-│   ├── food.py                # Food objects and spawning
-│   └── enemy.py               # Enemy blob definitions with AI behavior
-├── ai_training/                # AI training system
-│   ├── trainer.py             # Main training pipeline
-│   ├── neural_network.py      # PyTorch neural network architecture
-│   ├── data_collector.py      # Game state data collection
-│   ├── manage_models.py       # Model management utilities
-│   └── models/                # Trained AI models
-├── utils/                      # Utility functions
-│   ├── constants.py           # Game configuration
-│   └── math_utils.py          # Mathematical utilities and growth calculations
-└── requirements.txt            # Python dependencies
-```
-
-## 🔧 Configuration
+## Configuration
 
 ### Game Settings
 - **World Size**: 19200x10800 pixels (20% larger than screen)
@@ -219,7 +180,7 @@ Agar.io/
 - **Model Saving**: Best and latest models saved automatically
 - **Performance Tracking**: Episode-based performance metrics
 
-## 🎯 Gameplay Tips
+## Gameplay Tips
 
 ### For Beginners
 1. **Start Small**: Focus on eating food before engaging enemies
@@ -235,32 +196,20 @@ Agar.io/
 4. **Enemy Behavior**: Learn AI patterns to predict their movements
 5. **Growth Optimization**: Use diminishing returns to plan your growth strategy
 
-## 🐛 Known Issues
-
-- All major split mechanics issues have been resolved
-- AI training requires GPU for optimal performance
+# ISSUES
 - Some visual artifacts may occur during rapid zoom changes
 
-## 🤝 Contributing
+## Contributing
+All contributions are appreciated (Someone please help me fix zoom bug)
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by the original Agar.io game
 - Built with Pygame for Python game development
 - AI training powered by PyTorch
-- GPU acceleration via DirectML
+- Used VSCode's Built in LLM to create comprehensive README and commit messages.
 
-## 📊 Development Status
+## Development Status
 
 - **Core Gameplay**: ✅ Complete
 - **Split System**: ✅ Complete (100%)
@@ -273,7 +222,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Current Version**: 1.0.15  
-**Last Updated**: January 2025  
+**Last Updated**: September 2025  
 **Python Version**: 3.8+  
 **Pygame Version**: 2.6.0+  
 **PyTorch Version**: 2.0.0+
