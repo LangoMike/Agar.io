@@ -28,6 +28,8 @@ from ai_training.neural_network import (
     StateProcessor,
     ModelManager,
     create_beginner_model,
+    create_intermediate_model,
+    create_hard_model,
 )
 from entities.enemy import EnemyBlob
 from entities.food import Food
@@ -56,7 +58,20 @@ class AITrainer:
 
         # Create neural network model
         if difficulty == "beginner":
-            self.model = create_beginner_model()
+            # Try to load the best performing model (episode 27) as starting point
+            best_model_path = "ai_training/models/beginner_model_episode_27.pth"
+            if os.path.exists(best_model_path):
+                print(f"Loading best model: {best_model_path}")
+                self.model, metadata = self.model_manager.load_model(best_model_path)
+                print(
+                    f"   Loaded model from episode {metadata.get('episode', 'unknown')}"
+                )
+                print(
+                    f"   Previous performance: {metadata.get('performance_metrics', {}).get('performance', 'unknown')}"
+                )
+            else:
+                print("Creating new beginner model")
+                self.model = create_beginner_model()
         elif difficulty == "intermediate":
             self.model = create_intermediate_model()
         else:  # hard
@@ -67,10 +82,10 @@ class AITrainer:
             import torch_directml
 
             self.device = torch_directml.device()
-            print(f"🚀 Using DirectML device: {self.device}")
+            print(f"Using DirectML device: {self.device}")
         except ImportError:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            print(f"🚀 Using device: {self.device}")
+            print(f"Using device: {self.device}")
 
         self.model = self.model.to(self.device)
 
@@ -85,15 +100,15 @@ class AITrainer:
 
         # Game simulation parameters - optimized for faster training
         if difficulty == "beginner":
-            self.max_episode_time = 30.0  # Reduced to 30s for faster learning
+            self.max_episode_time = 20.0  # Reduced to 20s for much faster learning
         elif difficulty == "intermediate":
-            self.max_episode_time = 45.0  # Medium complexity
+            self.max_episode_time = 30.0  # Medium complexity
         else:  # hard
-            self.max_episode_time = 60.0  # Full complexity
+            self.max_episode_time = 40.0  # Full complexity
 
-        self.dt = 1.0 / 30.0  # Reduced from 60 FPS to 30 FPS for faster simulation
+        self.dt = 1.0 / 20.0  # Reduced to 20 FPS for much faster simulation
 
-        print(f"🤖 AI Trainer initialized for {difficulty} difficulty")
+        print(f"AI Trainer initialized for {difficulty} difficulty")
         print(f"   Model parameters: {sum(p.numel() for p in self.model.parameters())}")
         print(f"   Training episodes: {training_episodes}")
         print(f"   Enemies per episode: {num_enemies}")
@@ -112,6 +127,8 @@ class AITrainer:
             position = Vector2(x, y)
 
             enemy = EnemyBlob(position, ENEMY_MIN_SIZE)
+            # Add milestone tracking to prevent spam
+            enemy.milestones_achieved = set()
             enemies.append(enemy)
 
         # Create food
@@ -138,10 +155,10 @@ class AITrainer:
         active_enemies = [enemy for enemy in enemies if enemy.is_active]
 
         # Main simulation loop - optimized for batch processing
-        # Enhanced early termination conditions
-        min_survival_time = 3.0  # Reduced for faster feedback
-        target_size_increase = 100.0
-        max_time_for_target = 20.0  # Target: 100 size in 20 seconds
+        # Enhanced early termination conditions for beginner AI
+        min_survival_time = 2.0  # Reduced for faster feedback
+        target_size_increase = 200.0  # Adjusted goal for faster episodes
+        max_time_for_target = 15.0  # Adjusted for faster episodes
 
         while episode_time < self.max_episode_time and len(active_enemies) > 0:
             # Process all active enemies in batch for better performance
@@ -242,11 +259,32 @@ class AITrainer:
                             size_gain = enemy.size - old_size
                             if size_gain > 0:
                                 print(
-                                    f"🍎 Enemy ate food: {old_size:.1f} → {enemy.size:.1f} (+{size_gain:.1f})"
+                                    f"-Enemy ate food: {old_size:.1f} → {enemy.size:.1f} (+{size_gain:.1f})"
                                 )
 
+                # Check for enemy consumption (Phase 3: Strategic behavior)
+                enemies_eaten_this_step = 0
+                for other_enemy in enemies[:]:
+                    if (
+                        other_enemy != enemy
+                        and other_enemy.is_active
+                        and enemy.check_collision_with_enemy(other_enemy)
+                        and enemy.can_eat_enemy(other_enemy)
+                    ):
+
+                        old_size = enemy.size
+                        if enemy.eat_enemy(other_enemy):
+                            enemies_eaten_this_step += 1
+                            enemy.enemies_eaten += 1  # Track total enemies eaten
+                            size_gain = enemy.size - old_size
+                            print(
+                                f"👹 Enemy ate another enemy: {old_size:.1f} → {enemy.size:.1f} (+{size_gain:.1f}) - Total enemies eaten: {enemy.enemies_eaten}"
+                            )
+
                 # Calculate reward
-                reward = self._calculate_step_reward(enemy, food_eaten, episode_time)
+                reward = self._calculate_step_reward(
+                    enemy, food_eaten, enemies_eaten_this_step, episode_time
+                )
                 self.data_collector.record_reward(reward)
 
             # Update episode time
@@ -260,21 +298,21 @@ class AITrainer:
                 for enemy in active_enemies:
                     size_increase = enemy.size - ENEMY_MIN_SIZE
 
-                    # Success: Reached target size quickly
+                    # NEW GOAL Success: Reached 300 size quickly
                     if (
                         size_increase >= target_size_increase
                         and episode_time <= max_time_for_target
                     ):
                         print(
-                            f"🎯 SUCCESS: AI grew from {ENEMY_MIN_SIZE} to {enemy.size:.1f} "
-                            f"(+{size_increase:.1f}) in {episode_time:.1f}s - UNDER 20s TARGET!"
+                            f"TARGET SUCCESS: AI grew from {ENEMY_MIN_SIZE} to {enemy.size:.1f} "
+                            f"(+{size_increase:.1f}) in {episode_time:.1f}s - UNDER 30s TARGET!"
                         )
                         break
-                    # Partial success: Reached target but took too long
+                    # Partial Success: Reached target but took too long
                     elif size_increase >= target_size_increase:
                         print(
-                            f"🎯 PARTIAL: AI grew from {ENEMY_MIN_SIZE} to {enemy.size:.1f} "
-                            f"(+{size_increase:.1f}) in {episode_time:.1f}s - OVER 20s target"
+                            f"TARGET PARTIAL: AI grew from {ENEMY_MIN_SIZE} to {enemy.size:.1f} "
+                            f"(+{size_increase:.1f}) in {episode_time:.1f}s - OVER 30s target"
                         )
                         break
                 else:
@@ -288,19 +326,23 @@ class AITrainer:
             best_size_increase = best_enemy.size - ENEMY_MIN_SIZE
             total_food_eaten = sum(enemy.total_mass_gained for enemy in enemies)
 
+            total_enemies_eaten = sum(enemy.enemies_eaten for enemy in enemies)
             print(
-                f"🏆 Best AI: Size {best_enemy.size:.1f} (+{best_size_increase:.1f}), Food eaten: {total_food_eaten}"
+                f"🏆 Best AI: Size {best_enemy.size:.1f} (+{best_size_increase:.1f}), Food eaten: {total_food_eaten}, Enemies eaten: {total_enemies_eaten}"
             )
         else:
             best_enemy = enemies[0]  # Fallback if all died
             best_size_increase = 0
             total_food_eaten = 0
 
+        # Calculate total enemies eaten by all active enemies
+        total_enemies_eaten = sum(enemy.enemies_eaten for enemy in enemies)
+
         self.data_collector.end_episode(
             final_enemy_size=best_enemy.size,
             survival_time=episode_time,
             food_eaten=int(total_food_eaten),
-            enemies_eaten=0,  # Simplified for now
+            enemies_eaten=total_enemies_eaten,  # Track actual enemies eaten
             died=len(active_enemies) == 0,
             cause_of_death=(
                 "timeout" if episode_time >= self.max_episode_time else "unknown"
@@ -387,38 +429,97 @@ class AITrainer:
             enemy.ai_state = states[state_transition]
 
     def _calculate_step_reward(
-        self, enemy: EnemyBlob, food_eaten: int, episode_time: float
+        self, enemy: EnemyBlob, food_eaten: int, enemies_eaten: int, episode_time: float
     ) -> float:
-        """Enhanced reward system for better learning"""
+        """Enhanced reward system for beginner AI with 3 phases"""
         base_reward = 0.0
-
-        # Food eating reward (primary focus)
-        if food_eaten > 0:
-            # Exponential reward for eating food - encourages consistent eating
-            base_reward += food_eaten * 10.0
-
-        # Enemy eating reward (HUGE reward - main game mechanic!)
-        if hasattr(enemy, "enemies_eaten") and enemy.enemies_eaten > 0:
-            # Massive reward for eating other AI enemies - this is the core gameplay!
-            base_reward += (
-                enemy.enemies_eaten * 1000.0
-            )  # 1000x reward for each enemy eaten
-
-        # Size growth reward
         size_increase = enemy.size - ENEMY_MIN_SIZE
+
+        # NEW GOAL: Aggressive food consumption for 300 size in 30 seconds
+        if food_eaten > 0:
+            # MASSIVE food eating reward - primary driver for size growth
+            base_reward += food_eaten * 50.0  # Increased from 15.0 to 50.0
+
+            # Bonus for consecutive food eating (encourages sustained eating)
+            if hasattr(enemy, "consecutive_food_eaten"):
+                enemy.consecutive_food_eaten += food_eaten
+            else:
+                enemy.consecutive_food_eaten = food_eaten
+
+            # Consecutive eating bonus (exponential reward for sustained eating)
+            if enemy.consecutive_food_eaten >= 5:
+                consecutive_bonus = enemy.consecutive_food_eaten * 10.0
+                base_reward += consecutive_bonus
+                print(
+                    f"Consecutive eating: {enemy.consecutive_food_eaten} foods! Bonus: +{consecutive_bonus}"
+                )
+        else:
+            # Reset consecutive counter if no food eaten
+            if hasattr(enemy, "consecutive_food_eaten"):
+                enemy.consecutive_food_eaten = 0
+
+        # Phase 2: Efficient movement - avoid walls/corners and seek food
+        # Wall avoidance reward (penalty for being near edges)
+        edge_distance = min(
+            enemy.position.x,
+            enemy.position.y,
+            WORLD_WIDTH - enemy.position.x,
+            WORLD_HEIGHT - enemy.position.y,
+        )
+        if edge_distance < 50:  # Too close to edge
+            base_reward -= 5.0  # Penalty for poor movement
+        else:
+            base_reward += 2.0  # Bonus for staying away from edges
+
+        # Phase 3: Strategic behavior - eat enemies (MAIN GOAL for beginner AI)
+        if enemies_eaten > 0:
+            # MASSIVE reward for eating enemies - this is the main goal!
+            base_reward += enemies_eaten * 500.0  # High reward for strategic behavior
+            print(
+                f"Strategic success: Enemy ate {enemies_eaten} enemy(ies)! Reward: +{enemies_eaten * 500.0}"
+            )
+
+        # Size growth reward with milestone-based bonuses
         if size_increase > 0:
-            # Reward for growing, with bonus for rapid growth
-            growth_rate = size_increase / max(episode_time, 1.0)
-            base_reward += size_increase * 2.0 + growth_rate * 50.0
+            # Base growth reward (increased for faster learning)
+            base_reward += size_increase * 8.0  # Increased from 3.0 to 8.0
+
+            # Size milestone bonuses (encourages rapid growth) - only trigger once per milestone
+            if size_increase >= 150.0 and 150 not in enemy.milestones_achieved:
+                base_reward += 100.0  # First milestone
+                enemy.milestones_achieved.add(150)
+                print(f"Milestone: Reached 150 size increase! Bonus: +100")
+            if size_increase >= 200.0 and 200 not in enemy.milestones_achieved:
+                base_reward += 200.0  # Second milestone
+                enemy.milestones_achieved.add(200)
+                print(f"Milestone: Reached 200 size increase! Bonus: +200")
+            if size_increase >= 250.0 and 250 not in enemy.milestones_achieved:
+                base_reward += 500.0  # Third milestone
+                enemy.milestones_achieved.add(250)
+                print(f"Milestone: Reached 250 size increase! Bonus: +500")
+            if size_increase >= 300.0 and 300 not in enemy.milestones_achieved:
+                base_reward += 1000.0  # TARGET MILESTONE!
+                enemy.milestones_achieved.add(300)
+                print(f"TARGET ACHIEVED: Reached 300 size increase! Bonus: +1000")
+
+            # Time-based urgency bonus (encourages speed)
+            if episode_time <= 30.0:
+                growth_rate = size_increase / max(episode_time, 1.0)
+                base_reward += growth_rate * 200.0  # Increased from 100.0 to 200.0
+
+                # Special bonus for reaching 300 size quickly
+                if size_increase >= 300.0:
+                    time_bonus = (
+                        max(0, 30.0 - episode_time) * 50.0
+                    )  # Increased time bonus
+                    base_reward += time_bonus
+                    print(
+                        f"Speed success: Reached 300 size in {episode_time:.1f}s! Time bonus: +{time_bonus}"
+                    )
 
         # Survival reward (decreases over time to encourage action)
-        survival_bonus = max(0, 10.0 - episode_time * 0.1)
+        survival_bonus = max(0, 15.0 - episode_time * 0.2)
         base_reward += survival_bonus
-
-        # Speed bonus for reaching target quickly
-        if size_increase >= 100.0:
-            time_bonus = max(0, 30.0 - episode_time) * 10.0
-            base_reward += time_bonus
 
         return base_reward
 
@@ -427,9 +528,19 @@ class AITrainer:
         if episodes is None:
             episodes = self.training_episodes
 
-        print(f"🚀 Starting training for {episodes} episodes...")
+        print(f"Starting training for {episodes} episodes...")
 
-        for episode in tqdm(range(episodes), desc="Training"):
+        # Start from episode 28 since we're continuing from episode 27
+        start_episode = (
+            28
+            if self.difficulty == "beginner"
+            and os.path.exists("ai_training/models/beginner_model_episode_27.pth")
+            else 0
+        )
+
+        for episode in tqdm(
+            range(start_episode, start_episode + episodes), desc="Training"
+        ):
             # Simulate episode
             episode_data = self.simulate_episode()
 
@@ -445,22 +556,18 @@ class AITrainer:
 
                 self.model_manager.save_model(
                     self.model,
-                    model_path,
-                    episode_num=episode,
-                    performance=performance,
-                    metadata={
-                        "difficulty": self.difficulty,
-                        "episode": episode,
-                        "performance": performance,
-                        "training_date": datetime.now().isoformat(),
-                    },
+                    episode,
+                    {"performance": performance},
+                    self.difficulty,
                 )
-                print(f"💾 Model saved: {model_path}")
+                print(f"Model saved: {model_path}")
 
             # Update best performance and save best model
             if performance > self.best_performance:
                 self.best_performance = performance
-                best_model_path = f"ai_training/models/best_{self.difficulty}_model.pth"
+                best_model_path = (
+                    f"ai_training/models/best_{self.difficulty}_model_{episode}.pth"
+                )
 
                 # Ensure models directory exists
                 os.makedirs("ai_training/models", exist_ok=True)
@@ -468,18 +575,16 @@ class AITrainer:
                 # Save best model
                 self.model_manager.save_model(
                     self.model,
-                    best_model_path,
-                    episode_num=episode,
-                    performance=performance,
-                    metadata={
-                        "difficulty": self.difficulty,
+                    episode,
+                    {
+                        "performance": performance,
                         "best_performance": self.best_performance,
-                        "training_date": datetime.now().isoformat(),
                     },
+                    self.difficulty,
                 )
 
                 print(
-                    f"🏆 NEW BEST MODEL: {best_model_path} (Performance: {performance:.2f})"
+                    f"NEW BEST MODEL: {best_model_path} (Performance: {performance:.2f})"
                 )
                 self.best_model_path = best_model_path
 
@@ -489,11 +594,11 @@ class AITrainer:
                 )
                 self.model_manager.save_model(
                     self.model,
-                    latest_model_path,
-                    episode_num=episode,
-                    performance=performance,
+                    episode,
+                    {"performance": performance},
+                    self.difficulty,
                 )
-                print(f"📁 Latest model saved: {latest_model_path}")
+                print(f"Latest model saved: {latest_model_path}")
 
             # Print progress every 5 episodes
             if episode % 5 == 0:
@@ -509,31 +614,57 @@ class AITrainer:
         )
         self.model_manager.save_model(
             self.model,
-            final_model_path,
-            episode_num=episodes - 1,
-            performance=self.best_performance,
-            metadata={
-                "difficulty": self.difficulty,
+            episodes - 1,
+            {
+                "performance": self.best_performance,
                 "final_performance": self.best_performance,
-                "training_date": datetime.now().isoformat(),
             },
+            self.difficulty,
         )
+
+        # Ensure we always have a latest model for easy testing
+        self._save_latest_model()
 
         # Save training history
         self._save_training_history()
 
+        # Create comprehensive training summary
+        self._create_training_summary()
+
+        # Run automatic cleanup
+        self._run_automatic_cleanup()
+
     def _calculate_episode_performance(self, episode: TrainingEpisode) -> float:
-        """Calculate overall performance score for an episode"""
-        # Weighted combination of different metrics
+        """Calculate overall performance score for an episode with beginner AI focus"""
+        # Weighted combination of different metrics for beginner AI
         survival_score = episode.survival_time / self.max_episode_time
-        growth_score = episode.final_enemy_size / 100.0  # Normalize to reasonable size
-        food_score = episode.food_eaten / 10.0  # Normalize to reasonable food count
+        growth_score = (
+            episode.final_enemy_size / 200.0
+        )  # Normalize to reasonable size (200 max)
+        food_score = episode.food_eaten / 15.0  # Normalize to reasonable food count
+
+        # Phase 3: Strategic behavior - enemies eaten (HIGH WEIGHT for beginner AI)
+        enemies_score = min(episode.enemies_eaten / 2.0, 1.0)  # Cap at 2 enemies eaten
 
         # Death penalty
         death_penalty = 0.0 if not episode.died else -0.5
 
+        # NEW GOAL bonus: Size growth under 30 seconds
+        target_bonus = 0.0
+        if episode.final_enemy_size >= 300.0 and episode.survival_time <= 30.0:
+            target_bonus = 0.5  # Massive bonus for reaching 300 size in 30s
+        elif episode.final_enemy_size >= 200.0 and episode.survival_time <= 30.0:
+            target_bonus = 0.3  # Good bonus for reaching 200 size in 30s
+        elif episode.final_enemy_size >= 300.0:
+            target_bonus = 0.2  # Partial bonus for reaching 300 size (but too slow)
+
         performance = (
-            survival_score * 0.4 + growth_score * 0.3 + food_score * 0.3 + death_penalty
+            survival_score * 0.15
+            + growth_score * 0.3  # Increased weight for size growth
+            + food_score * 0.25  # Increased weight for food consumption
+            + enemies_score * 0.3  # Maintained weight for strategic behavior
+            + death_penalty
+            + target_bonus  # NEW: Bonus for reaching 300 size goal
         )
 
         return max(0.0, performance)  # Ensure non-negative
@@ -543,15 +674,173 @@ class AITrainer:
         filename = f"{self.difficulty}_training_history.json"
         filepath = os.path.join("ai_training/logs", filename)
 
-        with open(filepath, "w") as f:
-            json.dump(self.training_history, f, indent=2)
+        # Create training history data
+        training_data = {
+            "difficulty": self.difficulty,
+            "best_performance": self.best_performance,
+            "best_model_path": self.best_model_path,
+            "training_episodes": self.training_episodes,
+            "num_enemies": self.num_enemies,
+            "max_episode_time": self.max_episode_time,
+            "training_date": datetime.now().isoformat(),
+            "episode_summaries": [],
+        }
 
-        print(f"📊 Training history saved to {filepath}")
+        # Add episode summaries if available
+        if hasattr(self.data_collector, "episode_data"):
+            for episode in self.data_collector.episode_data:
+                training_data["episode_summaries"].append(
+                    {
+                        "episode_id": episode.episode_id,
+                        "final_size": episode.final_enemy_size,
+                        "survival_time": episode.survival_time,
+                        "food_eaten": episode.food_eaten,
+                        "enemies_eaten": episode.enemies_eaten,
+                        "died": episode.died,
+                    }
+                )
+
+        with open(filepath, "w") as f:
+            json.dump(training_data, f, indent=2)
+
+        print(f"Training history saved to {filepath}")
+
+    def _save_latest_model(self):
+        """Always save the latest model for easy testing"""
+        latest_model_path = f"ai_training/models/latest_{self.difficulty}_model.pth"
+        os.makedirs("ai_training/models", exist_ok=True)
+
+        # Get the last episode number
+        last_episode = self.training_episodes - 1
+
+        self.model_manager.save_model(
+            self.model,
+            last_episode,
+            {"performance": self.best_performance},
+            self.difficulty,
+        )
+        print(f"Latest model saved: {latest_model_path}")
+
+    def _create_training_summary(self):
+        """Create a comprehensive training summary report"""
+        import time
+
+        # Calculate training statistics
+        total_episodes = (
+            len(self.data_collector.episode_data)
+            if hasattr(self.data_collector, "episode_data")
+            else 0
+        )
+        episodes_with_enemies_eaten = 0
+        episodes_reaching_150_size = 0
+        episodes_reaching_200_size = 0
+        total_food_eaten = 0
+        total_enemies_eaten = 0
+        avg_survival_time = 0
+        avg_final_size = 0
+
+        if (
+            hasattr(self.data_collector, "episode_data")
+            and self.data_collector.episode_data
+        ):
+            for episode in self.data_collector.episode_data:
+                if episode.enemies_eaten > 0:
+                    episodes_with_enemies_eaten += 1
+                if episode.final_enemy_size >= 150:
+                    episodes_reaching_150_size += 1
+                if episode.final_enemy_size >= 200:
+                    episodes_reaching_200_size += 1
+                total_food_eaten += episode.food_eaten
+                total_enemies_eaten += episode.enemies_eaten
+                avg_survival_time += episode.survival_time
+                avg_final_size += episode.final_enemy_size
+
+            avg_survival_time /= total_episodes
+            avg_final_size /= total_episodes
+
+        # Create summary data
+        summary_data = {
+            "training_session": {
+                "difficulty": self.difficulty,
+                "start_episode": 28,  # Starting from episode 27
+                "total_episodes": total_episodes,
+                "training_date": datetime.now().isoformat(),
+                "best_performance": self.best_performance,
+                "best_model_path": self.best_model_path,
+            },
+            "performance_metrics": {
+                "episodes_with_enemies_eaten": episodes_with_enemies_eaten,
+                "enemy_eating_rate": (
+                    f"{(episodes_with_enemies_eaten/total_episodes*100):.1f}%"
+                    if total_episodes > 0
+                    else "0%"
+                ),
+                "episodes_reaching_150_size": episodes_reaching_150_size,
+                "episodes_reaching_200_size": episodes_reaching_200_size,
+                "avg_survival_time": f"{avg_survival_time:.1f}s",
+                "avg_final_size": f"{avg_final_size:.1f}",
+                "total_food_eaten": int(total_food_eaten),
+                "total_enemies_eaten": total_enemies_eaten,
+            },
+            "training_goals": {
+                "primary_goal": "Consistently gain 200 size in under 15 seconds",
+                "milestone_bonuses": "150, 200, 250, 300 size increases",
+                "strategic_behavior": "Eat enemies for size advantage",
+                "efficient_movement": "Avoid walls and seek food",
+            },
+            "model_info": {
+                "model_parameters": sum(p.numel() for p in self.model.parameters()),
+                "learning_rate": self.learning_rate,
+                "max_episode_time": self.max_episode_time,
+                "num_enemies_per_episode": self.num_enemies,
+            },
+        }
+
+        # Save summary to file
+        summary_filename = f"{self.difficulty}_training_summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        summary_filepath = os.path.join("ai_training/logs", summary_filename)
+
+        with open(summary_filepath, "w") as f:
+            json.dump(summary_data, f, indent=2)
+
+        # Print summary to console
+        print(f"\n{'='*60}")
+        print(f"TRAINING SESSION SUMMARY")
+        print(f"{'='*60}")
+        print(f"Difficulty: {self.difficulty}")
+        print(f"Episodes Trained: {total_episodes}")
+        print(f"Best Performance: {self.best_performance:.2f}")
+        print(
+            f"Best Model: {os.path.basename(self.best_model_path) if self.best_model_path else 'None'}"
+        )
+        print(f"\nPerformance Metrics:")
+        print(
+            f"  Enemy Eating Rate: {(episodes_with_enemies_eaten/total_episodes*100):.1f}% ({episodes_with_enemies_eaten}/{total_episodes})"
+        )
+        print(f"  Episodes Reaching 150+ Size: {episodes_reaching_150_size}")
+        print(f"  Episodes Reaching 200+ Size: {episodes_reaching_200_size}")
+        print(f"  Average Survival Time: {avg_survival_time:.1f}s")
+        print(f"  Average Final Size: {avg_final_size:.1f}")
+        print(f"  Total Food Eaten: {int(total_food_eaten)}")
+        print(f"  Total Enemies Eaten: {total_enemies_eaten}")
+        print(f"\nSummary saved to: {summary_filepath}")
+        print(f"{'='*60}")
+
+    def _run_automatic_cleanup(self):
+        """Run automatic cleanup after training"""
+        try:
+            from ai_training.manage_models import automatic_cleanup_after_training
+
+            automatic_cleanup_after_training()
+        except ImportError as e:
+            print(f"Warning: Could not run automatic cleanup: {e}")
+        except Exception as e:
+            print(f"Warning: Error during automatic cleanup: {e}")
 
 
 def main():
     """Main training function"""
-    print("🎮 Agar.io AI Training System")
+    print("Agar.io AI Training System")
     print("=" * 50)
 
     # Create trainer for beginner difficulty with optimized settings
@@ -561,28 +850,29 @@ def main():
         training_episodes=25,  # Reduced for faster testing and iteration
     )
 
-    print("\n🎯 Training Goals:")
-    print("   Phase 1: Consistently reach 100 size in under 20 seconds")
-    print("   Phase 2: Efficient movement and food seeking")
-    print("   Phase 3: Strategic behavior and survival")
-    print("   Phase 4: Advanced tactics and enemy avoidance")
+    print("\nBeginner AI Training Goals (UPDATED):")
+    print("   PRIMARY GOAL: Consistently gain 200 size in under 15 seconds")
+    print("   - Aggressive food consumption with massive rewards")
+    print("   - Efficient movement - avoid walls/corners and seek food")
+    print("   - Strategic behavior - eat enemies for size advantage")
+    print("   - Size milestone bonuses: 175, 200, 250, 300 size increases")
 
     # Start training
     trainer.train_model()
 
-    print(f"\n🏆 Training Complete!")
+    print(f"\nTraining Complete!")
     print(f"   Best Performance: {trainer.best_performance:.2f}")
     if trainer.best_model_path:
         print(f"   Best Model: {trainer.best_model_path}")
         print(f"   Latest Model: ai_training/models/latest_beginner_model.pth")
-        print(f"\n🎮 To test your AI:")
+        print(f"\nTo test your AI:")
         print(f"   1. Copy 'latest_beginner_model.pth' to 'ai_training/models/'")
         print(f"   2. Run 'python main.py' to play against the trained AI")
         print(f"   3. Watch for improved food-eating behavior!")
 
     # Print final summary
     summary = trainer.data_collector.get_training_summary()
-    print("\n📈 Final Training Summary:")
+    print("\nFinal Training Summary:")
     for key, value in summary.items():
         print(f"   {key}: {value}")
 

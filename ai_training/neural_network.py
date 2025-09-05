@@ -260,12 +260,12 @@ class ModelManager:
             filepath,
         )
 
-        print(f"💾 Model saved: {filename}")
+        print(f"Model saved: {filename}")
         return filepath
 
     def load_model(self, filepath: str) -> Tuple[AgarAINetwork, Dict[str, Any]]:
         """Load a trained model"""
-        checkpoint = torch.load(filepath, map_location="cpu")
+        checkpoint = torch.load(filepath, map_location="cpu", weights_only=False)
 
         # Recreate model
         config = checkpoint["model_config"]
@@ -370,4 +370,4 @@ if __name__ == "__main__":
 
     # Test model manager
     manager = ModelManager()
-    print("✅ All components working correctly!")
+    print("All components working correctly!")

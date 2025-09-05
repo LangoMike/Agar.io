@@ -15,61 +15,28 @@ AI vs AI Battles → Data Collection → Neural Network Learning → Model Updat
 - **Rewards** given for eating food, growing, and surviving
 - **Models saved** every 5 episodes and when performance improves
 
-### 2. File Structure
-```
-ai_training/
-├── models/                    # 🎯 KEEP THESE - Your trained AI brains
-│   ├── best_beginner_model.pth
-│   ├── latest_beginner_model.pth
-│   └── beginner_model_episode_X.pth
-├── data/                     # 🗑️ DELETE THESE - Raw training data
-│   └── episode_2025_.../    # (Takes up space, not needed for gameplay)
-├── logs/                     # 📊 KEEP - Training progress
-│   └── beginner_training_history.json
-└── trainer.py               # 🚀 Main training script
-```
 
-## Training Goals
+### 2. Training Goals
 
-### Phase 1: Basic Food Eating ✅
+## Phase 1: Basic Food Eating 
 - **Target**: Consistently reach 100 size in under 20 seconds
 - **Current Status**: AI can eat food and grow, but needs optimization
 - **Next Steps**: Improve movement efficiency and food-seeking behavior
 
-### Phase 2: Efficient Movement 🎯
+## Phase 2: Efficient Movement 
 - Learn optimal paths to food
 - Reduce time to reach food
 - Improve survival rate
 
-### Phase 3: Strategic Behavior 🧠
+## Phase 3: Strategic Behavior 
 - Avoid dangerous situations
 - Develop food-seeking strategies
 - Better resource management
 
-### Phase 4: Advanced Tactics ⚡
+## Phase 4: Advanced Tactics 
 - Enemy avoidance
 - Territory control
 - Split mechanics
-
-## Quick Start
-
-### 1. Train Your AI
-```bash
-python ai_training/trainer.py
-```
-
-### 2. Clean Up Training Data (Save Space)
-```bash
-python ai_training/manage_models.py
-# Choose option 1 to delete episode folders
-```
-
-### 3. Test Your Trained AI
-```bash
-python ai_training/manage_models.py
-# Choose option 3 to copy a model for testing
-python main.py  # Play against your trained AI!
-```
 
 ## Model Management
 
@@ -78,10 +45,6 @@ python main.py  # Play against your trained AI!
 - **`latest_beginner_model.pth`**: Most recently trained model
 - **`beginner_model_episode_X.pth`**: Model at specific training episode
 
-### Testing Your AI
-1. Use `manage_models.py` to copy your best model
-2. Run `main.py` to play against the trained AI
-3. Watch for improved food-eating behavior!
 
 ## Training Parameters
 
@@ -105,27 +68,9 @@ python main.py  # Play against your trained AI!
 2. **Training too slow**: Reduce episodes, increase enemies, use GPU
 3. **Poor performance**: Adjust reward system, increase training episodes
 
-### Performance Tips
-- **GPU acceleration**: Use DirectML (AMD) or CUDA (NVIDIA)
-- **Batch processing**: Already implemented for faster training
-- **Early termination**: Episodes end when AI succeeds, saving time
-
 ## Next Steps
 
 1. **Complete Phase 1**: Get AI to consistently reach 100 size in under 20s
 2. **Increase complexity**: Add more enemies, longer episodes
 3. **Intermediate training**: Move to Phase 2 once basic behavior is solid
 4. **Human testing**: Play against your AI to see real progress!
-
-## File Cleanup
-
-**You can safely delete:**
-- All `episode_2025_...` folders (raw training data)
-- Old episode model files (keep only the best ones)
-
-**Keep these files:**
-- `.pth` model files (your trained AI)
-- `training_history.json` (progress tracking)
-- `trainer.py` and `manage_models.py` (training tools)
-
-This will save significant disk space while preserving your trained AI models!

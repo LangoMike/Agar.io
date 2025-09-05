@@ -44,16 +44,17 @@ CAMERA_MIN_ZOOM = 0.10
 
 # Food Settings
 FOOD_SIZES = {
-    19.0: 0.35,  # 35% chance - small food
-    25.0: 0.25,  # 25% chance - medium food
-    30.0: 0.20,  # 20% chance - large food
-    35.0: 0.12,  # 12% chance - huge food
-    40.0: 0.06,  # 6% chance - massive food
-    50.0: 0.015,  # 1.5% chance - legendary food
-    55.0: 0.005,  # 0.5% chance - ultra-legendary food
+    10.0: 0.40,  # 40% chance - tiny food (NEW - easiest to eat)
+    19.0: 0.30,  # 30% chance - small food (reduced from 35%)
+    25.0: 0.20,  # 20% chance - medium food (reduced from 25%)
+    30.0: 0.15,  # 15% chance - large food (reduced from 20%)
+    35.0: 0.10,  # 10% chance - huge food (reduced from 12%)
+    40.0: 0.04,  # 4% chance - massive food (reduced from 6%)
+    50.0: 0.01,  # 1% chance - legendary food (reduced from 1.5%)
+    55.0: 0.005,  # 0.5% chance - ultra-legendary food (unchanged)
 }
 
-FOOD_DENSITY = 1 / 175000  # 1 food per 175,000 pixels (reduced from 50,000)
+FOOD_DENSITY = 1 / 160000  # 1 food per 160,000 pixels (increased from 175,000)
 FOOD_MULTIPLIER = 0.5  # Reduced food multiplier to prevent overpopulation
 
 # Growth System Settings

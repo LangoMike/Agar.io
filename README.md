@@ -237,8 +237,6 @@ Agar.io/
 
 ## 🐛 Known Issues
 
-- All major split mechanics issues have been resolved
-- AI training requires GPU for optimal performance
 - Some visual artifacts may occur during rapid zoom changes
 
 ## 🤝 Contributing
@@ -272,8 +270,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Current Version**: 1.0.15  
-**Last Updated**: January 2025  
+**Current Version**: 1.1.0  
+**Last Updated**: September 2025  
 **Python Version**: 3.8+  
 **Pygame Version**: 2.6.0+  
 **PyTorch Version**: 2.0.0+

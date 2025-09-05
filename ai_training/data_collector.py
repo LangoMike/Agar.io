@@ -110,7 +110,7 @@ class DataCollector:
             "cause_of_death": "unknown",
         }
 
-        print(f"🎯 Started episode: {episode_id}")
+        print(f"Started episode: {episode_id}")
         return episode_id
 
     def record_state(
@@ -228,7 +228,7 @@ class DataCollector:
         self.total_episodes += 1
         self.episode_data.append(episode)
 
-        print(f"✅ Episode {episode.episode_id} completed:")
+        print(f"Episode {episode.episode_id} completed:")
         print(f"   Duration: {episode.duration:.1f}s")
         print(f"   Final size: {episode.final_enemy_size:.1f}")
         print(f"   Food eaten: {episode.food_eaten}")
@@ -253,7 +253,7 @@ class DataCollector:
         # Convert states and actions
         episode_dict["states"] = [asdict(state) for state in episode.states]
         episode_dict["actions"] = [asdict(action) for action in episode.actions]
-        
+
         # Convert numpy types to Python types for JSON serialization
         def convert_numpy_types(obj):
             if isinstance(obj, np.integer):
@@ -263,7 +263,7 @@ class DataCollector:
             elif isinstance(obj, np.ndarray):
                 return obj.tolist()
             return obj
-        
+
         # Apply conversion to all values
         def convert_dict(d):
             for key, value in d.items():
@@ -277,7 +277,7 @@ class DataCollector:
                             value[i] = convert_numpy_types(item)
                 else:
                     d[key] = convert_numpy_types(value)
-        
+
         convert_dict(episode_dict)
 
         with open(filepath, "w") as f:
@@ -418,6 +418,6 @@ if __name__ == "__main__":
 
     # Print summary
     summary = collector.get_training_summary()
-    print("\n📊 Training Summary:")
+    print("\nTraining Summary:")
     for key, value in summary.items():
         print(f"   {key}: {value}")
