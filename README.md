@@ -195,7 +195,7 @@ python main.py
 4. **Enemy Behavior**: Learn AI patterns to predict their movements
 5. **Growth Optimization**: Use diminishing returns to plan your growth strategy
 
-## 🐛 Known Issues
+## Known Issues
 
 - Some visual artifacts may occur during rapid zoom changes
 
@@ -221,7 +221,7 @@ All contributions are appreciated (Someone please help me fix zoom bug)
 
 ---
 
-**Current Version**: 1.1.0
+**Current Version**: 1.1.2
 **Last Updated**: September 2025  
 **Python Version**: 3.8+  
 **Pygame Version**: 2.6.0+  
