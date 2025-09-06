@@ -145,8 +145,7 @@ python main.py
 ```
 
 ### Controls
-- **WASD**: Move player
-- **Mouse**: Set movement target
+- **Mouse**: Move player
 - **Mouse Wheel**: Zoom in/out (0.10x to 3.0x)
 - **Space**: Split player (when size allows)
 - **C**: Toggle controls display
