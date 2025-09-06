@@ -1,0 +1,1211 @@
+{
+  "difficulty": "beginner",
+  "best_performance": 22.593263438393915,
+  "best_model_path": "ai_training/models/best_beginner_model_187.pth",
+  "training_episodes": 150,
+  "num_enemies": 25,
+  "max_episode_time": 25.0,
+  "training_date": "2025-09-05T22:34:31.187049",
+  "episode_summaries": [
+    {
+      "episode_id": "episode_20250905_203638",
+      "final_size": 169.53275478566843,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 749,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_203722",
+      "final_size": 114.62312555287066,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 577,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_203810",
+      "final_size": 103.97066889139457,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 430,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_203859",
+      "final_size": 146.6363386068994,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 894,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_203943",
+      "final_size": 135.63292395489168,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 502,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204032",
+      "final_size": 135.07378572089038,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 935,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204122",
+      "final_size": 208.4601226021444,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1110,
+      "enemies_eaten": 4,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204209",
+      "final_size": 127.41413645823164,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 626,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204259",
+      "final_size": 143.86485994721292,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 901,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204348",
+      "final_size": 117.593573359223,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 669,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204438",
+      "final_size": 89.42631840581528,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 574,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204527",
+      "final_size": 129.4300670106899,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 818,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204617",
+      "final_size": 150.5051056478037,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 871,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204707",
+      "final_size": 142.6568577394583,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 767,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204757",
+      "final_size": 113.60948136908299,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 611,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204848",
+      "final_size": 127.27657783245465,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 849,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_204938",
+      "final_size": 113.91313305681712,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 585,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205030",
+      "final_size": 146.11053108969594,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 611,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205123",
+      "final_size": 154.23212668036226,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 654,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205214",
+      "final_size": 124.27114441070808,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 673,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205305",
+      "final_size": 133.5276212703667,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 789,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205355",
+      "final_size": 140.9915143230575,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 746,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205446",
+      "final_size": 128.37173708471605,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 781,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205538",
+      "final_size": 171.4135970187851,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 648,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205624",
+      "final_size": 179.65580572695555,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 725,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205708",
+      "final_size": 151.3960695725204,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 681,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205754",
+      "final_size": 140.22561275140748,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 578,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205844",
+      "final_size": 140.93197070044425,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 794,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_205934",
+      "final_size": 127.8404258587877,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 968,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210022",
+      "final_size": 101.60137019822504,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 466,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210114",
+      "final_size": 145.50951771672143,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 765,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210205",
+      "final_size": 205.12077605713097,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 866,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210257",
+      "final_size": 134.535738509461,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 662,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210349",
+      "final_size": 136.91711558881153,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 609,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210441",
+      "final_size": 87.61970892068734,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 462,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210527",
+      "final_size": 130.27809879504142,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 684,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210611",
+      "final_size": 108.71069516289809,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 857,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210655",
+      "final_size": 169.9209191479728,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 673,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210739",
+      "final_size": 149.13368184792876,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1014,
+      "enemies_eaten": 3,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210822",
+      "final_size": 128.55595521722756,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 563,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210906",
+      "final_size": 114.02154398388991,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 580,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_210949",
+      "final_size": 85.73080608355212,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 354,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211034",
+      "final_size": 138.121528676457,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 761,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211116",
+      "final_size": 178.51449494787408,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 734,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211159",
+      "final_size": 182.9907418083797,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1059,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211243",
+      "final_size": 113.60948136908299,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1055,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211326",
+      "final_size": 102.97528625717096,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 629,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211410",
+      "final_size": 257.6015493893215,
+      "survival_time": 23.559999999999675,
+      "food_eaten": 1176,
+      "enemies_eaten": 4,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211450",
+      "final_size": 134.29124841765466,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 531,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211535",
+      "final_size": 137.655416732043,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 766,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211618",
+      "final_size": 95.85752277333708,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 397,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211704",
+      "final_size": 85.73080608355212,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 457,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211748",
+      "final_size": 121.8465374949148,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 763,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211833",
+      "final_size": 240.0790755243054,
+      "survival_time": 23.999999999999666,
+      "food_eaten": 1121,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211916",
+      "final_size": 102.23066883126087,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 585,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_211959",
+      "final_size": 131.3374722264179,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 872,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212044",
+      "final_size": 145.45786224505366,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 764,
+      "enemies_eaten": 3,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212126",
+      "final_size": 154.9935840066311,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 923,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212211",
+      "final_size": 119.26878204940597,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 714,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212254",
+      "final_size": 135.7233804604637,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 825,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212338",
+      "final_size": 142.39019113705123,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 640,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212423",
+      "final_size": 177.2051981998496,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 553,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212507",
+      "final_size": 155.50140164891462,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 983,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212553",
+      "final_size": 127.06336465874139,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 736,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212637",
+      "final_size": 111.46672743849479,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 705,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212722",
+      "final_size": 108.99140055678113,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 471,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212806",
+      "final_size": 126.20495061209473,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 760,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212851",
+      "final_size": 125.44890681782498,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 905,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_212937",
+      "final_size": 156.60719144287293,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 731,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213021",
+      "final_size": 103.74494343437081,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 586,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213104",
+      "final_size": 132.94527100106214,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 865,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213149",
+      "final_size": 140.3417358649402,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 672,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213233",
+      "final_size": 106.3893063281672,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 802,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213317",
+      "final_size": 94.61329060634708,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 609,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213403",
+      "final_size": 155.53266511810838,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 738,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213447",
+      "final_size": 148.72969965105844,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 855,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213530",
+      "final_size": 121.55506925512472,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 585,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213615",
+      "final_size": 118.97993094956546,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 732,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213658",
+      "final_size": 155.27753597762268,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 939,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213742",
+      "final_size": 135.827669828034,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1001,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213826",
+      "final_size": 182.37480251660793,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1009,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213910",
+      "final_size": 114.93120227763458,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 951,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_213953",
+      "final_size": 223.1288860051412,
+      "survival_time": 22.79999999999969,
+      "food_eaten": 914,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214034",
+      "final_size": 128.49771231491601,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 843,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214117",
+      "final_size": 101.18766143779841,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 801,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214201",
+      "final_size": 151.69799307781756,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1026,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214248",
+      "final_size": 129.73349874492627,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 661,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214333",
+      "final_size": 128.39976187239512,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 739,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214417",
+      "final_size": 163.81577003459304,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 901,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214502",
+      "final_size": 162.9722274293596,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 999,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214546",
+      "final_size": 136.49035385870252,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 752,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214630",
+      "final_size": 194.60635143372812,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 784,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_214928",
+      "final_size": 120.31040484894241,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 529,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215014",
+      "final_size": 129.91811661634648,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1088,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215100",
+      "final_size": 122.15814807153572,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 804,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215253",
+      "final_size": 146.73196392898836,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 808,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215338",
+      "final_size": 129.09492530601642,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 566,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215423",
+      "final_size": 133.68170599010972,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 964,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215547",
+      "final_size": 160.29974469590474,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 656,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215633",
+      "final_size": 151.16529492948231,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1150,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215717",
+      "final_size": 217.7409481544107,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 793,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215804",
+      "final_size": 134.44382645419932,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 974,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215848",
+      "final_size": 173.73800404679733,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 701,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_215932",
+      "final_size": 109.85989636369965,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 666,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220017",
+      "final_size": 124.98823897263865,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 823,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220100",
+      "final_size": 130.49030446231825,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 887,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220144",
+      "final_size": 141.30928951940783,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1200,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220229",
+      "final_size": 173.95644444581905,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 539,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220313",
+      "final_size": 194.91935547006727,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1023,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220400",
+      "final_size": 112.86318049507437,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 785,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220445",
+      "final_size": 139.78912121256096,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 893,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220529",
+      "final_size": 111.8512731795425,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 695,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220614",
+      "final_size": 104.94254011126972,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 665,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220659",
+      "final_size": 131.33036608157042,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 890,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220742",
+      "final_size": 113.54109635696838,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 834,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220827",
+      "final_size": 269.38937438435585,
+      "survival_time": 24.79999999999965,
+      "food_eaten": 954,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220910",
+      "final_size": 120.52397696762706,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 556,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_220954",
+      "final_size": 111.19014747609783,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 923,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221042",
+      "final_size": 166.40137753589312,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 617,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221126",
+      "final_size": 121.23139563178918,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 856,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221211",
+      "final_size": 164.1115274471691,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 639,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221255",
+      "final_size": 119.26288230782626,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 766,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221338",
+      "final_size": 209.0676001434206,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1017,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221423",
+      "final_size": 119.51967310722722,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 702,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221509",
+      "final_size": 131.9146054782704,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 780,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221553",
+      "final_size": 127.57752044229592,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 691,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221638",
+      "final_size": 117.4329343749061,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 919,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221721",
+      "final_size": 118.66817522092396,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 667,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221809",
+      "final_size": 122.40226046133733,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 696,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221853",
+      "final_size": 125.7746582931651,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1039,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_221937",
+      "final_size": 137.92665826167135,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 796,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222021",
+      "final_size": 146.0061296556725,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 870,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222104",
+      "final_size": 122.58278351198162,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 862,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222149",
+      "final_size": 102.59643094409918,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 429,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222234",
+      "final_size": 134.29997428880932,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 656,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222318",
+      "final_size": 140.5474912954056,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 868,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222403",
+      "final_size": 176.96577432033325,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1313,
+      "enemies_eaten": 2,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222447",
+      "final_size": 90.20676374197143,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 511,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222535",
+      "final_size": 115.00588328609439,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 605,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222620",
+      "final_size": 133.75300503618698,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 718,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222705",
+      "final_size": 117.92736341127154,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 461,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222749",
+      "final_size": 123.18820010650546,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1098,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222834",
+      "final_size": 127.73984415838241,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1039,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_222918",
+      "final_size": 124.33675693855858,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 808,
+      "enemies_eaten": 0,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223003",
+      "final_size": 147.44791903395333,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 1025,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223047",
+      "final_size": 111.58726004076905,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 793,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223131",
+      "final_size": 202.46565837814714,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 869,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223216",
+      "final_size": 102.39844859581713,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 607,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223300",
+      "final_size": 130.18694604082378,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 827,
+      "enemies_eaten": 1,
+      "died": false
+    },
+    {
+      "episode_id": "episode_20250905_223343",
+      "final_size": 147.19013192378011,
+      "survival_time": 25.039999999999644,
+      "food_eaten": 742,
+      "enemies_eaten": 1,
+      "died": false
+    }
+  ]
+}

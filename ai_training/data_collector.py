@@ -303,7 +303,7 @@ class DataCollector:
             "total_episodes": self.total_episodes,
             "total_states": self.total_states,
             "total_actions": self.total_actions,
-            "total_training_time": total_duration,
+            "total_training_time (mins)": total_duration / 60,
             "average_survival_time": avg_survival_time,
             "average_final_size": avg_final_size,
             "death_rate": death_rate,

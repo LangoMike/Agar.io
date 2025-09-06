@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 import random
+import shutil
 import time
 from typing import List, Dict, Any, Tuple
 from tqdm import tqdm
@@ -100,13 +101,13 @@ class AITrainer:
 
         # Game simulation parameters - optimized for faster training
         if difficulty == "beginner":
-            self.max_episode_time = 20.0  # Reduced to 20s for much faster learning
+            self.max_episode_time = 25.0  # Slightly increased for better learning
         elif difficulty == "intermediate":
             self.max_episode_time = 30.0  # Medium complexity
         else:  # hard
             self.max_episode_time = 40.0  # Full complexity
 
-        self.dt = 1.0 / 20.0  # Reduced to 20 FPS for much faster simulation
+        self.dt = 1.0 / 25.0  # Increased to 25 FPS for better simulation quality
 
         print(f"AI Trainer initialized for {difficulty} difficulty")
         print(f"   Model parameters: {sum(p.numel() for p in self.model.parameters())}")
@@ -118,17 +119,32 @@ class AITrainer:
         # Create world
         world = World()
 
-        # Create enemies
+        # Create enemies with varied starting positions for better training diversity
         enemies = []
         for i in range(self.num_enemies):
-            # Random spawn position
-            x = random.uniform(100, WORLD_WIDTH - 100)
-            y = random.uniform(100, WORLD_HEIGHT - 100)
+            # Vary spawn positions - some near center, some near edges for diverse scenarios
+            if i < self.num_enemies // 2:
+                # Center area spawns
+                x = random.uniform(WORLD_WIDTH * 0.3, WORLD_WIDTH * 0.7)
+                y = random.uniform(WORLD_HEIGHT * 0.3, WORLD_HEIGHT * 0.7)
+            else:
+                # Edge area spawns for more challenging scenarios
+                x = random.uniform(50, WORLD_WIDTH - 50)
+                y = random.uniform(50, WORLD_HEIGHT - 50)
+
             position = Vector2(x, y)
 
             enemy = EnemyBlob(position, ENEMY_MIN_SIZE)
             # Add milestone tracking to prevent spam
             enemy.milestones_achieved = set()
+            # Reset exploration tracking for each episode
+            enemy.visited_positions = set()
+            enemy.total_movement = 0.0
+            # Reset wall avoidance tracking
+            enemy.wall_history = []
+            enemy.wall_warning_shown = False
+            enemy.corner_warning_shown = False
+            enemy.wall_riding_warning_shown = False
             enemies.append(enemy)
 
         # Create food
@@ -437,8 +453,8 @@ class AITrainer:
 
         # NEW GOAL: Aggressive food consumption for 300 size in 30 seconds
         if food_eaten > 0:
-            # MASSIVE food eating reward - primary driver for size growth
-            base_reward += food_eaten * 50.0  # Increased from 15.0 to 50.0
+            # Balanced food eating reward - primary driver for size growth
+            base_reward += food_eaten * 25.0  # Reduced from 50.0 for better learning
 
             # Bonus for consecutive food eating (encourages sustained eating)
             if hasattr(enemy, "consecutive_food_eaten"):
@@ -458,25 +474,18 @@ class AITrainer:
             if hasattr(enemy, "consecutive_food_eaten"):
                 enemy.consecutive_food_eaten = 0
 
-        # Phase 2: Efficient movement - avoid walls/corners and seek food
-        # Wall avoidance reward (penalty for being near edges)
-        edge_distance = min(
-            enemy.position.x,
-            enemy.position.y,
-            WORLD_WIDTH - enemy.position.x,
-            WORLD_HEIGHT - enemy.position.y,
-        )
-        if edge_distance < 50:  # Too close to edge
-            base_reward -= 5.0  # Penalty for poor movement
-        else:
-            base_reward += 2.0  # Bonus for staying away from edges
+        # Phase 2: Enhanced wall avoidance system to prevent wall-riding
+        wall_penalty = self._calculate_wall_avoidance_penalty(enemy)
+        base_reward += wall_penalty
 
         # Phase 3: Strategic behavior - eat enemies (MAIN GOAL for beginner AI)
         if enemies_eaten > 0:
-            # MASSIVE reward for eating enemies - this is the main goal!
-            base_reward += enemies_eaten * 500.0  # High reward for strategic behavior
+            # High reward for eating enemies - this is the main goal!
+            base_reward += (
+                enemies_eaten * 200.0
+            )  # Reduced from 500.0 for better learning
             print(
-                f"Strategic success: Enemy ate {enemies_eaten} enemy(ies)! Reward: +{enemies_eaten * 500.0}"
+                f"Strategic success: Enemy ate {enemies_eaten} enemy(ies)! Reward: +{enemies_eaten * 200.0}"
             )
 
         # Size growth reward with milestone-based bonuses
@@ -521,7 +530,132 @@ class AITrainer:
         survival_bonus = max(0, 15.0 - episode_time * 0.2)
         base_reward += survival_bonus
 
+        # NEW: Exploration bonus - reward for moving to new areas
+        if not hasattr(enemy, "visited_positions"):
+            enemy.visited_positions = set()
+
+        # Discretize position for exploration tracking
+        grid_x = int(enemy.position.x // 100)
+        grid_y = int(enemy.position.y // 100)
+        position_key = (grid_x, grid_y)
+
+        if position_key not in enemy.visited_positions:
+            enemy.visited_positions.add(position_key)
+            base_reward += 1.0  # Small exploration bonus
+
+        # NEW: Center positioning bonus - encourage staying in the middle area
+        center_x = WORLD_WIDTH / 2
+        center_y = WORLD_HEIGHT / 2
+        distance_from_center = (
+            (enemy.position.x - center_x) ** 2 + (enemy.position.y - center_y) ** 2
+        ) ** 0.5
+
+        # Bonus for being in the center area (within 30% of world size from center)
+        max_center_distance = min(WORLD_WIDTH, WORLD_HEIGHT) * 0.3
+        if distance_from_center < max_center_distance:
+            center_bonus = (
+                (max_center_distance - distance_from_center) / max_center_distance * 2.0
+            )
+            base_reward += center_bonus
+
+        # NEW: Efficiency penalty - discourage excessive movement without eating
+        if not hasattr(enemy, "total_movement"):
+            enemy.total_movement = 0.0
+
+        # Track movement (simplified - just add a small amount each step)
+        enemy.total_movement += 1.0
+
+        # Penalty if moving too much without eating
+        if enemy.total_movement > 100 and food_eaten == 0 and enemies_eaten == 0:
+            base_reward -= 0.5  # Small penalty for inefficient movement
+
         return base_reward
+
+    def _calculate_wall_avoidance_penalty(self, enemy: EnemyBlob) -> float:
+        """Calculate comprehensive wall avoidance penalty to prevent wall-riding"""
+        penalty = 0.0
+
+        # Get distances to all walls
+        left_distance = enemy.position.x
+        right_distance = WORLD_WIDTH - enemy.position.x
+        top_distance = enemy.position.y
+        bottom_distance = WORLD_HEIGHT - enemy.position.y
+
+        min_distance = min(left_distance, right_distance, top_distance, bottom_distance)
+
+        # Progressive penalty system - the closer to walls, the higher the penalty
+        if min_distance < 20:  # Very close to wall - severe penalty
+            penalty -= 15.0
+            if not hasattr(enemy, "wall_warning_shown"):
+                enemy.wall_warning_shown = False
+            if not enemy.wall_warning_shown:
+                print(
+                    f"WALL WARNING: Enemy too close to wall! Distance: {min_distance:.1f}"
+                )
+                enemy.wall_warning_shown = True
+        elif min_distance < 50:  # Close to wall - moderate penalty
+            penalty -= 8.0
+        elif min_distance < 100:  # Near wall - small penalty
+            penalty -= 3.0
+        else:  # Safe distance from walls - small bonus
+            penalty += 1.0
+
+        # Corner penalty - being in corners is especially bad
+        corner_threshold = 80
+        if (
+            min_distance < corner_threshold
+            and (left_distance < corner_threshold or right_distance < corner_threshold)
+            and (top_distance < corner_threshold or bottom_distance < corner_threshold)
+        ):
+            penalty -= 10.0  # Additional corner penalty
+            if not hasattr(enemy, "corner_warning_shown"):
+                enemy.corner_warning_shown = False
+            if not enemy.corner_warning_shown:
+                print(
+                    f"CORNER WARNING: Enemy stuck in corner! Distance: {min_distance:.1f}"
+                )
+                enemy.corner_warning_shown = True
+
+        # Wall-riding detection - if enemy stays near same wall for too long
+        if not hasattr(enemy, "wall_history"):
+            enemy.wall_history = []
+
+        # Track which wall the enemy is closest to
+        if min_distance < 100:
+            if left_distance == min_distance:
+                wall_type = "left"
+            elif right_distance == min_distance:
+                wall_type = "right"
+            elif top_distance == min_distance:
+                wall_type = "top"
+            else:
+                wall_type = "bottom"
+
+            enemy.wall_history.append(wall_type)
+
+            # Keep only last 20 wall interactions
+            if len(enemy.wall_history) > 20:
+                enemy.wall_history = enemy.wall_history[-20:]
+
+            # Check for wall-riding (same wall for too long)
+            if len(enemy.wall_history) >= 10:
+                same_wall_count = sum(
+                    1 for w in enemy.wall_history[-10:] if w == wall_type
+                )
+                if same_wall_count >= 8:  # 80% of last 10 steps on same wall
+                    penalty -= 20.0  # Severe wall-riding penalty
+                    if not hasattr(enemy, "wall_riding_warning_shown"):
+                        enemy.wall_riding_warning_shown = False
+                    if not enemy.wall_riding_warning_shown:
+                        print(
+                            f"WALL-RIDING DETECTED: Enemy riding {wall_type} wall! Penalty: -20.0"
+                        )
+                        enemy.wall_riding_warning_shown = True
+        else:
+            # Reset wall history when away from walls
+            enemy.wall_history = []
+
+        return penalty
 
     def train_model(self, episodes: int = None):
         """Train the model for specified number of episodes"""
@@ -530,13 +664,8 @@ class AITrainer:
 
         print(f"Starting training for {episodes} episodes...")
 
-        # Start from episode 28 since we're continuing from episode 27
-        start_episode = (
-            28
-            if self.difficulty == "beginner"
-            and os.path.exists("ai_training/models/beginner_model_episode_27.pth")
-            else 0
-        )
+        # Start from the highest existing episode + 1
+        start_episode = self._get_next_episode_number()
 
         for episode in tqdm(
             range(start_episode, start_episode + episodes), desc="Training"
@@ -592,11 +721,21 @@ class AITrainer:
                 latest_model_path = (
                     f"ai_training/models/latest_{self.difficulty}_model.pth"
                 )
-                self.model_manager.save_model(
-                    self.model,
-                    episode,
-                    {"performance": performance},
-                    self.difficulty,
+                # Save latest model directly to the correct path
+                torch.save(
+                    {
+                        "model_state_dict": self.model.state_dict(),
+                        "model_config": {
+                            "input_size": self.model.input_size,
+                            "hidden_sizes": self.model.hidden_sizes,
+                            "output_size": self.model.output_size,
+                        },
+                        "episode": episode,
+                        "performance_metrics": {"performance": performance},
+                        "difficulty": self.difficulty,
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                    latest_model_path,
                 )
                 print(f"Latest model saved: {latest_model_path}")
 
@@ -658,16 +797,54 @@ class AITrainer:
         elif episode.final_enemy_size >= 300.0:
             target_bonus = 0.2  # Partial bonus for reaching 300 size (but too slow)
 
+        # NEW: Speed bonus for reaching targets quickly
+        speed_bonus = 0.0
+        if episode.final_enemy_size >= 200.0:
+            time_ratio = episode.survival_time / self.max_episode_time
+            speed_bonus = max(0, 0.3 - time_ratio * 0.3)  # Bonus for finishing early
+
         performance = (
             survival_score * 0.15
-            + growth_score * 0.3  # Increased weight for size growth
-            + food_score * 0.25  # Increased weight for food consumption
-            + enemies_score * 0.3  # Maintained weight for strategic behavior
+            + growth_score * 0.35  # Increased growth emphasis
+            + food_score * 0.25  # Maintained food weight
+            + enemies_score * 0.25  # Slightly reduced enemy emphasis
             + death_penalty
             + target_bonus  # NEW: Bonus for reaching 300 size goal
+            + speed_bonus  # New speed component
         )
 
         return max(0.0, performance)  # Ensure non-negative
+
+    def _get_next_episode_number(self) -> int:
+        """Get the next episode number to start from"""
+        import glob
+
+        # Find all existing episode models
+        pattern = f"ai_training/models/{self.difficulty}_model_episode_*.pth"
+        existing_models = glob.glob(pattern)
+
+        if not existing_models:
+            return 0
+
+        # Extract episode numbers and find the highest
+        episode_numbers = []
+        for model_path in existing_models:
+            filename = os.path.basename(model_path)
+            try:
+                # Extract episode number from filename like "beginner_model_episode_47.pth"
+                episode_num = int(filename.split("_")[-1].split(".")[0])
+                episode_numbers.append(episode_num)
+            except (ValueError, IndexError):
+                continue
+
+        if episode_numbers:
+            next_episode = max(episode_numbers) + 1
+            print(
+                f"Found existing models up to episode {max(episode_numbers)}, starting from episode {next_episode}"
+            )
+            return next_episode
+        else:
+            return 0
 
     def _save_training_history(self):
         """Save training history to file"""
@@ -846,8 +1023,8 @@ def main():
     # Create trainer for beginner difficulty with optimized settings
     trainer = AITrainer(
         difficulty="beginner",
-        num_enemies=20,  # Increased for faster learning
-        training_episodes=25,  # Reduced for faster testing and iteration
+        num_enemies=25,  # Increased for faster learning
+        training_episodes=150,  # Extended training session for comprehensive learning
     )
 
     print("\nBeginner AI Training Goals (UPDATED):")
@@ -865,10 +1042,6 @@ def main():
     if trainer.best_model_path:
         print(f"   Best Model: {trainer.best_model_path}")
         print(f"   Latest Model: ai_training/models/latest_beginner_model.pth")
-        print(f"\nTo test your AI:")
-        print(f"   1. Copy 'latest_beginner_model.pth' to 'ai_training/models/'")
-        print(f"   2. Run 'python main.py' to play against the trained AI")
-        print(f"   3. Watch for improved food-eating behavior!")
 
     # Print final summary
     summary = trainer.data_collector.get_training_summary()

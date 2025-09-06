@@ -1,0 +1,32 @@
+{
+  "training_session": {
+    "difficulty": "beginner",
+    "start_episode": 28,
+    "total_episodes": 25,
+    "training_date": "2025-09-05T19:28:49.748742",
+    "best_performance": 12.879161567666062,
+    "best_model_path": "ai_training/models/best_beginner_model_13.pth"
+  },
+  "performance_metrics": {
+    "episodes_with_enemies_eaten": 3,
+    "enemy_eating_rate": "12.0%",
+    "episodes_reaching_150_size": 2,
+    "episodes_reaching_200_size": 0,
+    "avg_survival_time": "20.0s",
+    "avg_final_size": "119.5",
+    "total_food_eaten": 12585,
+    "total_enemies_eaten": 3
+  },
+  "training_goals": {
+    "primary_goal": "Consistently gain 200 size in under 15 seconds",
+    "milestone_bonuses": "150, 200, 250, 300 size increases",
+    "strategic_behavior": "Eat enemies for size advantage",
+    "efficient_movement": "Avoid walls and seek food"
+  },
+  "model_info": {
+    "model_parameters": 4780,
+    "learning_rate": 0.001,
+    "max_episode_time": 20.0,
+    "num_enemies_per_episode": 20
+  }
+}

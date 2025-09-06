@@ -52,7 +52,7 @@ def cleanup_training_data():
 
 def automatic_cleanup_after_training():
     """Automatically clean up after training - no user input required"""
-    print("🧹 Automatic cleanup after training...")
+    print("Automatic cleanup post training...")
 
     # Clean up episode JSON files from ai_training/data
     cleanup_episode_json_files()
@@ -60,7 +60,7 @@ def automatic_cleanup_after_training():
     # Clean up excess models (keep only 9 best)
     cleanup_excess_models()
 
-    print("✅ Automatic cleanup completed")
+    print("*** Automatic cleanup completed ***")
 
 
 def cleanup_episode_json_files():
@@ -191,51 +191,3 @@ def copy_model_for_testing(source_model, target_name="test_model.pth"):
     except Exception as e:
         print(f"❌ Failed to copy model: {e}")
         return False
-
-
-def main():
-    """Main management interface"""
-    print("Agar.io AI Model Manager")
-    print("=" * 40)
-
-    while True:
-        print("\nOptions:")
-        print("1. Clean up training data (save space)")
-        print("2. List available models")
-        print("3. Copy model for testing")
-        print("4. Exit")
-
-        choice = input("\nChoose an option (1-4): ")
-
-        if choice == "1":
-            cleanup_training_data()
-
-        elif choice == "2":
-            models = list_available_models()
-
-        elif choice == "3":
-            models = list_available_models()
-            if models:
-                print(f"\nSelect a model to copy (1-{len(models)}):")
-                for i, model in enumerate(models, 1):
-                    print(f"   {i}. {os.path.basename(model)}")
-
-                try:
-                    model_choice = int(input("Model number: ")) - 1
-                    if 0 <= model_choice < len(models):
-                        copy_model_for_testing(models[model_choice])
-                    else:
-                        print("❌ Invalid choice")
-                except ValueError:
-                    print("❌ Please enter a number")
-
-        elif choice == "4":
-            print("👋 Goodbye!")
-            break
-
-        else:
-            print("❌ Invalid choice")
-
-
-if __name__ == "__main__":
-    main()

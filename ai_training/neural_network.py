@@ -332,7 +332,7 @@ def create_hard_model() -> AgarAINetwork:
 
 if __name__ == "__main__":
     # Test the neural network
-    print("🧠 Testing Neural Network Architecture...")
+    print("Testing Neural Network Architecture...")
 
     # Create a test model
     model = AgarAINetwork()
